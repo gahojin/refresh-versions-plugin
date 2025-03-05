@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.GradlePlugin
-import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SonatypeHost
 import io.gitlab.arturbosch.detekt.Detekt
@@ -25,6 +24,10 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.coroutines)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.okio)
 
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutines.test)

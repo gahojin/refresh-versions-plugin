@@ -9,7 +9,6 @@ object Constants {
     // プラグイン情報
     const val GROUP = "refreshVersions"
     const val PLUGIN_ID = "jp.co.gahojin.refreshVersions"
-    const val EXTENSION_NAME = "refreshVersions"
 
     // バージョンカタログファイル名
     const val LIBS_VERSIONS_TOML = "gradle/libs.versions.toml"

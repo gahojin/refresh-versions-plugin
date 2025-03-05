@@ -19,7 +19,7 @@ data class TomlFile(
     }
 
     fun format(sortSection: Boolean): String = buildString {
-        initialzeRoot()
+        initializeRoot()
         val tmpSections = if (sortSection) sortedSections() else sections.keys
 
         for (section in tmpSections) {
@@ -48,7 +48,7 @@ data class TomlFile(
         }
     }
 
-    private fun initialzeRoot() {
+    private fun initializeRoot() {
         var rootLines = get(TomlSection.Root)
         if (rootLines.none { it.text.isNotBlank() }) {
             this[TomlSection.Root] = listOf(

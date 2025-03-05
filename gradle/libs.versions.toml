@@ -32,11 +32,15 @@ maven-publish = "0.30.0"
 
 mockk = "1.13.16"
 
+okhttp = "5.0.0-alpha.14"
+
+okio = "3.10.2"
+
 [libraries]
 
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
 
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib" }
 
 kotlinx-coroutines-bom = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-bom", version.ref = "kotlinx-coroutines" }
 
@@ -53,3 +57,11 @@ kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core" 
 kotest-property = { group = "io.kotest", name = "kotest-property" }
 
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+
+okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
+okhttp-coroutines = { group = "com.squareup.okhttp3", name = "okhttp-coroutines", version.ref = "okhttp" }
+
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }

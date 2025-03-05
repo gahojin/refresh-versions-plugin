@@ -4,16 +4,26 @@
 
 detekt = "1.22.0"
 
+dokka = "2.0.0"
+
 kotlin = "1.9.25"
 
 [plugins]
 
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = "io.gitlab.arturbosch.detekt:1.22.0"
 
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm",   version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm",     version.ref = "kotlin" }
 
 [libraries]
 
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
+
+kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.0"
+
+kotest-bom = { group = "io.kotest", name = "kotest-bom",       version = "5.9.1" }
+
+mockk = "io.mockk:mockk:1.13.16"

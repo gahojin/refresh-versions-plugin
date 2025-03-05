@@ -6,8 +6,8 @@ package jp.co.gahojin.refreshVersions
 import jp.co.gahojin.refreshVersions.ext.register
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
@@ -16,16 +16,17 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
         group = Constants.GROUP
     }
 
-    @InputFile
-    var versionsTomlFile: File? = null
-    @Input
-    var sortSection: Boolean = false
+    @get:Internal
+    abstract val versionsTomlFile: Property<File>
+
+    @get:Internal
+    abstract val sortSection: Property<Boolean>
 
     @TaskAction
     fun cleanUp() {
-        val file = requireNotNull(versionsTomlFile)
+        val file = requireNotNull(versionsTomlFile.orNull)
         if (file.exists()) {
-            val content = VersionCatalogCleaner.execute(file.readText(), sortSection)
+            val content = VersionCatalogCleaner.execute(file.readText(), sortSection.getOrElse(false))
             file.writeText(content)
         }
     }
@@ -35,8 +36,8 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
 
         fun register(project: Project, extensions: RefreshVersionsExtension) {
             project.tasks.register<RefreshVersionsCleanupTask>(TASK_NAME) {
-                it.versionsTomlFile = extensions.getVersionsTomlFile()
-                it.sortSection = extensions.sortSection
+                it.versionsTomlFile.set(extensions.getVersionsTomlFile())
+                it.sortSection.set(extensions.sortSection)
             }
         }
     }

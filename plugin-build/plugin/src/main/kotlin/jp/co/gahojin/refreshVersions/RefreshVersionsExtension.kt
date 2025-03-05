@@ -7,7 +7,7 @@ import jp.co.gahojin.refreshVersions.ext.create
 import org.gradle.api.initialization.Settings
 import java.io.File
 
-open class RefreshVersionsExtension {
+abstract class RefreshVersionsExtension {
     /** 対象バージョンカタログファイル */
     var versionsTomlFile: File? = null
 
