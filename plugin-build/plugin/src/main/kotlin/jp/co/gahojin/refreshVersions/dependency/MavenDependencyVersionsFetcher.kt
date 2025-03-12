@@ -5,10 +5,14 @@ package jp.co.gahojin.refreshVersions.dependency
 
 import jp.co.gahojin.refreshVersions.HttpException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
 import java.io.File
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 internal sealed class MavenDependencyVersionsFetcher(
     protected val repositoryUrl: String,
@@ -23,9 +27,12 @@ internal sealed class MavenDependencyVersionsFetcher(
         group: String,
         name: String,
         private val authorization: String?,
+        private val cacheDuration: Duration,
     ) : MavenDependencyVersionsFetcher(repositoryUrl, group, name) {
         private val metadataUrl = "${repositoryUrl.removeSuffix("/")}/${group.replace('.', '/')}/${name}/maven-metadata.xml"
         private val request = Request.Builder().apply {
+            // 一定期間キャッシュする
+            cacheControl(CacheControl.Builder().maxStale(cacheDuration).build())
             url(metadataUrl)
             authorization?.also { header("Authorization", it) }
         }.build()

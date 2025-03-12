@@ -25,5 +25,6 @@ dependencyResolutionManagement {
 }
 
 refreshVersions {
+    cacheDurationMinutes = 120
 //    versionsTomlFile = file("gradle/lib.versions.toml")
 }

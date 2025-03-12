@@ -6,17 +6,22 @@ package jp.co.gahojin.refreshVersions
 import jp.co.gahojin.refreshVersions.dependency.MavenDependencyVersionsFetcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okio.FileSystem
+import okio.Path
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.repositories.ArtifactRepository
-import org.gradle.plugin.use.PluginDependency
+import org.gradle.api.artifacts.repositories.UrlArtifactRepository
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * バージョン候補を調べる.
  */
 internal class LookupVersionsCandidates(
+    private val cacheDurationMinutes: Int,
     logLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BASIC,
     private val context: CoroutineContext = Dispatchers.IO,
 ) {
@@ -27,12 +32,19 @@ internal class LookupVersionsCandidates(
         repositories: List<ArtifactRepository>,
         versionsCatalogLibraries: Set<MinimalExternalModuleDependency>,
         versionsCatalogPlugins: Set<PluginDependencyCompat>,
-    ) {
+    ): List<String?> {
         return withContext(context) {
             withClient {
-                versionsCatalogLibraries.forEach { library ->
-                    repositories.forEach { repository ->
-//                        MavenDependencyVersionsFetcher.ForHttp(it, repository.toString())
+                versionsCatalogLibraries.flatMap { library ->
+                    repositories.filterIsInstance<UrlArtifactRepository>().map { repository ->
+                        MavenDependencyVersionsFetcher.ForHttp(
+                            client = it,
+                            repositoryUrl = repository.url.toString(),
+                            group = library.group.orEmpty(),
+                            name = library.name,
+                            authorization = null,
+                            cacheDuration = cacheDurationMinutes.minutes,
+                        ).fetchXmlMetadata().getOrNull()
                     }
                 }
             }
@@ -41,7 +53,8 @@ internal class LookupVersionsCandidates(
 
     private suspend inline fun <R> withClient(block: suspend (client: OkHttpClient) -> R): R {
         val client = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
+            .cache(ConfigHolder.cache)
+            .addNetworkInterceptor(loggingInterceptor)
             .followSslRedirects(true)
             .build()
         return try {

@@ -3,13 +3,12 @@
  */
 package jp.co.gahojin.refreshVersions
 
-import jp.co.gahojin.refreshVersions.dependency.MavenDependencyVersionsFetcher
-import jp.co.gahojin.refreshVersions.ext.getDefaultVersionCatalog
-import jp.co.gahojin.refreshVersions.ext.globalRepositories
-import jp.co.gahojin.refreshVersions.ext.register
-import jp.co.gahojin.refreshVersions.toml.TomlFile
+import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
+import jp.co.gahojin.refreshVersions.extension.globalRepositories
+import jp.co.gahojin.refreshVersions.extension.register
+import jp.co.gahojin.refreshVersions.extension.repositoriesWithGlobal
 import kotlinx.coroutines.runBlocking
-import okhttp3.OkHttpClient
+import okio.Path.Companion.toOkioPath
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserCodeException
 import org.gradle.api.Project
@@ -17,7 +16,6 @@ import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.repositories.ArtifactRepository
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
@@ -35,10 +33,15 @@ abstract class RefreshVersionsTask : DefaultTask() {
     @get:Internal
     abstract val sortSection: Property<Boolean>
 
-    private val versionCatalog = project.getDefaultVersionCatalog()
+    @get:Internal
+    abstract val cacheDurationMinutes: Property<Int>
+
+    private val versionCatalog = project.defaultVersionCatalog
 
     @TaskAction
     fun refreshVersions() {
+        ConfigHolder.initialize(this)
+
         val versionCatalog = versionCatalog ?: run {
             logger.lifecycle("versionsCatalog disabled.")
             return
@@ -51,12 +54,17 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
         // configuration構文で定義した依存を抽出
         runBlocking {
-            recordBuildscriptAndRegularDependencies(project)
+//            recordBuildscriptAndRegularDependencies(project)
+//                .forEach {
+//                    logger.lifecycle("${it.first} : ${it.second.joinToString()}")
+//                }
+
+            LookupVersionsCandidates(cacheDurationMinutes.get())
+                .execute(project.repositoriesWithGlobal, versionCatalog.libraries(), emptySet())
+                .filterNotNull()
                 .forEach {
-                    logger.lifecycle("${it.first} : ${it.second.joinToString()}")
+                    logger.lifecycle("hoge ${it}")
                 }
-//            LookupVersionsCandidates()
-//                .execute(repositories, versionCatalog.libraries(), emptySet())
         }
         logger.lifecycle("versions ${versionCatalog.versions().entries.joinToString { "${it.key}:${it.value}" }}")
         logger.lifecycle("libraries ${versionCatalog.libraries().joinToString { "${it.group}:${it.name}:${it.versionConstraint}, ${versionCatalog.versions().values.find {v -> it.versionConstraint == v }} " }}")
@@ -107,6 +115,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
             project.tasks.register<RefreshVersionsTask>(TASK_NAME) {
                 it.versionsTomlFile.set(extensions.getVersionsTomlFile())
                 it.sortSection.set(extensions.sortSection)
+                it.cacheDurationMinutes.set(extensions.cacheDurationMinutes)
             }
         }
     }

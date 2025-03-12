@@ -1,7 +1,7 @@
 /*
  * (C) 2025 GAHOJIN, Inc.
  */
-package jp.co.gahojin.refreshVersions.ext
+package jp.co.gahojin.refreshVersions.extension
 
 import org.gradle.api.Action
 import org.gradle.api.Task
