@@ -3,12 +3,12 @@
  */
 package jp.co.gahojin.refreshVersions
 
+import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
 import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
 import jp.co.gahojin.refreshVersions.extension.globalRepositories
 import jp.co.gahojin.refreshVersions.extension.register
 import jp.co.gahojin.refreshVersions.extension.repositoriesWithGlobal
 import kotlinx.coroutines.runBlocking
-import okio.Path.Companion.toOkioPath
 import org.gradle.api.DefaultTask
 import org.gradle.api.InvalidUserCodeException
 import org.gradle.api.Project
@@ -63,7 +63,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
                 .execute(project.repositoriesWithGlobal, versionCatalog.libraries(), emptySet())
                 .filterNotNull()
                 .forEach {
-                    logger.lifecycle("hoge ${it}")
+                    logger.lifecycle("versions: ${MavenMetadataParser.parse(it).joinToString()}")
                 }
         }
         logger.lifecycle("versions ${versionCatalog.versions().entries.joinToString { "${it.key}:${it.value}" }}")

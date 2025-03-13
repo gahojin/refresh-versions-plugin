@@ -10,9 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
 import java.io.File
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.hours
 
 internal sealed class MavenDependencyVersionsFetcher(
     protected val repositoryUrl: String,
