@@ -5,16 +5,21 @@ package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.extension.create
 import org.gradle.api.initialization.Settings
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import java.io.File
 
 abstract class RefreshVersionsExtension {
     /** 対象バージョンカタログファイル */
+    @get:InputFile
     var versionsTomlFile: File? = null
 
     /** セクション並び替えフラグ */
+    @get:Input
     var sortSection: Boolean = false
 
     /** キャッシュ有効期間 (分) */
+    @get:Input
     var cacheDurationMinutes: Int = DEFAULT_CACHE_DURATION
 
     internal fun getVersionsTomlFile(): File {

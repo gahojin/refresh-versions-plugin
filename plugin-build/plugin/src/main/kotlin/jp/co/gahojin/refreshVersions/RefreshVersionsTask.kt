@@ -5,29 +5,29 @@ package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
 import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
-import jp.co.gahojin.refreshVersions.extension.globalRepositories
 import jp.co.gahojin.refreshVersions.extension.register
 import jp.co.gahojin.refreshVersions.extension.repositoriesWithGlobal
+import jp.co.gahojin.refreshVersions.model.Dependency
+import jp.co.gahojin.refreshVersions.model.Repository
+import jp.co.gahojin.refreshVersions.model.maven
+import jp.co.gahojin.refreshVersions.toml.TomlFile
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
-import org.gradle.api.InvalidUserCodeException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.ProjectDependency
-import org.gradle.api.artifacts.repositories.ArtifactRepository
-import org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+
 
 abstract class RefreshVersionsTask : DefaultTask() {
     init {
         group = Constants.GROUP
     }
 
-    @get:Internal
+    @get:InputFile
     abstract val versionsTomlFile: Property<File>
 
     @get:Internal
@@ -38,6 +38,10 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
     private val versionCatalog = project.defaultVersionCatalog
 
+    private val repositoryWithGlobal = project.repositoriesWithGlobal
+
+    private val dependencies = recordBuildscriptAndRegularDependencies(project)
+
     @TaskAction
     fun refreshVersions() {
         ConfigHolder.initialize(this)
@@ -47,20 +51,23 @@ abstract class RefreshVersionsTask : DefaultTask() {
             return
         }
         val file = requireNotNull(versionsTomlFile.orNull)
-//        if (file.exists()) {
-//            val toml = TomlFile.parseToml(file.readText())
-//            logger.lifecycle("${toml.sections}")
-//        }
+        val toml = if (file.exists()) {
+            TomlFile.parseToml(file.readText())
+        } else {
+            logger.lifecycle("versionsCatalog file not found.")
+            return
+        }
+        logger.lifecycle("toml loaded. ${toml.sections.values.flatten().joinToString("\n")}")
 
         // configuration構文で定義した依存を抽出
         runBlocking {
-//            recordBuildscriptAndRegularDependencies(project)
-//                .forEach {
-//                    logger.lifecycle("${it.first} : ${it.second.joinToString()}")
-//                }
+            dependencies
+                .forEach {
+                    logger.lifecycle("${it.first} : ${it.second.joinToString()}")
+                }
 
             LookupVersionsCandidates(cacheDurationMinutes.get())
-                .execute(project.repositoriesWithGlobal, versionCatalog.libraries(), emptySet())
+                .execute(repositoryWithGlobal.maven(), versionCatalog.libraries(), emptySet())
                 .filterNotNull()
                 .forEach {
                     logger.lifecycle("versions: ${MavenMetadataParser.parse(it).joinToString()}")
@@ -71,40 +78,30 @@ abstract class RefreshVersionsTask : DefaultTask() {
         logger.lifecycle("plugins ${versionCatalog.plugins().joinToString { "${it.pluginId}:${it.version}" }}")
     }
 
-    fun recordBuildscriptAndRegularDependencies(rootProject: Project): List<Pair<Dependency, List<ArtifactRepository>>> {
-        val allDependencies = mutableListOf<Pair<Dependency, List<ArtifactRepository>>>()
-        val globalRepositories = ConfigHolder.settings.globalRepositories
+    fun recordBuildscriptAndRegularDependencies(rootProject: Project): List<Pair<Dependency, List<Repository>>> {
+        val allDependencies = mutableListOf<Pair<Dependency, List<Repository>>>()
         rootProject.allprojects {
-            val repositories = it.repositories + globalRepositories
-            try {
-                it.afterEvaluate {
-                    val dependencies = extractDependencies(it.configurations, repositories)
-                    allDependencies.addAll(dependencies)
-                }
-            } catch (_: InvalidUserCodeException) {
-                val dependencies = extractDependencies(it.configurations, repositories)
-                allDependencies.addAll(dependencies)
-            }
+            val repositories = it.repositoriesWithGlobal
+            val dependencies = extractDependencies(it.configurations, repositories)
+            allDependencies.addAll(dependencies)
         }
         return allDependencies
     }
 
     private fun extractDependencies(
         configurations: ConfigurationContainer,
-        repositories: List<ArtifactRepository>,
-    ): Sequence<Pair<Dependency, List<ArtifactRepository>>> {
+        repositories: List<Repository>,
+    ): Sequence<Pair<Dependency, List<Repository>>> {
         // TODO 仮実装
-        val mavenRepositories = repositories.filterIsInstance<DefaultMavenArtifactRepository>()
         return configurations
             .asSequence()
             .flatMap {
                 it.dependencies.asSequence()
             }.mapNotNull { rawDependency ->
-                // project(...)の依存は除外
-                if (rawDependency is ProjectDependency) return@mapNotNull null
-                // TODO リポジトリの制約を使用する
+                val dependency = Dependency.from(rawDependency) ?: return@mapNotNull null
 
-                rawDependency to mavenRepositories
+                // TODO リポジトリの制約を使用する
+                dependency to repositories
             }
     }
 

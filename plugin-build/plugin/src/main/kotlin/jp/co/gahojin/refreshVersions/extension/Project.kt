@@ -4,10 +4,11 @@
 package jp.co.gahojin.refreshVersions.extension
 
 import jp.co.gahojin.refreshVersions.ConfigHolder
+import jp.co.gahojin.refreshVersions.model.Repository
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.api.artifacts.repositories.ArtifactRepository
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
 val Project.defaultVersionCatalog: VersionCatalog?
     get() {
@@ -16,12 +17,13 @@ val Project.defaultVersionCatalog: VersionCatalog?
         return versionCatalogs?.find(settings.defaultCatalogName)?.orElse(null)
     }
 
-val Project.repositoriesWithGlobal: List<ArtifactRepository>
+val Project.repositoriesWithGlobal: List<Repository>
     get() {
         val globalRepositories = ConfigHolder.settings.globalRepositories
-        return when {
+        val repositories = when {
             globalRepositories.isEmpty() -> repositories
             repositories.isEmpty() -> globalRepositories
             else -> globalRepositories + repositories
         }
+        return repositories.mapNotNull { Repository.from(it) }
     }
