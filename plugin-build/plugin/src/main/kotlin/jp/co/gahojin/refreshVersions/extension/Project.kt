@@ -8,6 +8,7 @@ import jp.co.gahojin.refreshVersions.model.Repository
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
 val Project.defaultVersionCatalog: VersionCatalog?
@@ -17,7 +18,7 @@ val Project.defaultVersionCatalog: VersionCatalog?
         return versionCatalogs?.find(settings.defaultCatalogName)?.orElse(null)
     }
 
-val Project.repositoriesWithGlobal: List<Repository>
+val Project.repositoriesWithGlobal: List<ArtifactRepository>
     get() {
         val globalRepositories = ConfigHolder.settings.globalRepositories
         val repositories = when {
@@ -25,5 +26,5 @@ val Project.repositoriesWithGlobal: List<Repository>
             repositories.isEmpty() -> globalRepositories
             else -> globalRepositories + repositories
         }
-        return repositories.mapNotNull { Repository.from(it) }
+        return repositories
     }

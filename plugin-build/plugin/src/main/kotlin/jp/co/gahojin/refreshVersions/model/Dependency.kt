@@ -10,10 +10,17 @@ import org.gradle.api.artifacts.ProjectDependency
  * 依存情報.
  */
 sealed class Dependency {
-    abstract val group: String?
+    abstract val group: String
     abstract val name: String
     abstract val version: String?
     abstract val versionConstraint: VersionConstraint?
+
+    fun asArtifactResolutionDetails(): ArtifactResolutionDetailsDelegate {
+        return ArtifactResolutionDetailsDelegate(
+            group = group,
+            name = name,
+        )
+    }
 
     companion object {
         fun from(dependency: org.gradle.api.artifacts.Dependency): Dependency? {
@@ -28,14 +35,14 @@ sealed class Dependency {
 
     @ConsistentCopyVisibility
     data class General private constructor(
-        override val group: String?,
+        override val group: String,
         override val name: String,
         override val version: String?,
     ) : Dependency() {
         override val versionConstraint = null
 
         constructor(dependency: org.gradle.api.artifacts.Dependency) : this(
-            group = dependency.group,
+            group = dependency.group.orEmpty(),
             name = dependency.name,
             version = dependency.version,
         )
@@ -43,13 +50,13 @@ sealed class Dependency {
 
     @ConsistentCopyVisibility
     data class External private constructor(
-        override val group: String?,
+        override val group: String,
         override val name: String,
         override val version: String?,
         override val versionConstraint: VersionConstraint?,
     ) : Dependency() {
-        constructor(dependency: org.gradle.api.artifacts.ExternalDependency) : this(
-            group = dependency.group,
+        constructor(dependency: ExternalDependency) : this(
+            group = dependency.group.orEmpty(),
             name = dependency.name,
             version = dependency.version,
             versionConstraint = VersionConstraint(dependency.versionConstraint),

@@ -4,8 +4,10 @@
 package jp.co.gahojin.refreshVersions.model
 
 import org.gradle.api.artifacts.repositories.ArtifactRepository
+import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+import java.io.File
 import java.net.URI
 
 /**
@@ -21,6 +23,7 @@ sealed class Repository {
             return when (repository) {
                 is MavenArtifactRepository -> Maven(repository)
                 is IvyArtifactRepository -> Ivy(repository)
+                is FlatDirectoryArtifactRepository -> FlatDirectory(repository)
                 else -> null
             }
         }
@@ -63,7 +66,19 @@ sealed class Repository {
             },
         )
     }
+
+    @ConsistentCopyVisibility
+    data class FlatDirectory private constructor(
+        override val name: String,
+        val dirs: Set<File>,
+    ) : Repository() {
+        constructor(repository: FlatDirectoryArtifactRepository) : this(
+            name = repository.name,
+            dirs = repository.dirs,
+        )
+    }
 }
 
-fun List<Repository>.maven(): List<Repository.Maven> = filterIsInstance<Repository.Maven>()
-fun List<Repository>.ivy(): List<Repository.Ivy> = filterIsInstance<Repository.Ivy>()
+fun List<Repository>.maven() = filterIsInstance<Repository.Maven>()
+fun List<Repository>.ivy() = filterIsInstance<Repository.Ivy>()
+fun List<Repository>.flatDirectory() = filterIsInstance<Repository.FlatDirectory>()

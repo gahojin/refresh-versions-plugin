@@ -10,4 +10,5 @@ dependencies {
 
     testImplementation(platform(libs.kotest.bom))
     testImplementation(libs.mockk)
+    testImplementation(libs.truth)
 }

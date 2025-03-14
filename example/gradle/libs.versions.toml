@@ -8,6 +8,8 @@ dokka = "2.0.0"
 
 kotlin = "1.9.25"
 
+truth = "1.4.4"
+
 [plugins]
 
 detekt = "io.gitlab.arturbosch.detekt:1.22.0"
@@ -27,3 +29,5 @@ kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.0"
 kotest-bom = { group = "io.kotest", name = "kotest-bom",       version = "5.9.1" }
 
 mockk = "io.mockk:mockk:1.13.16"
+
+truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }

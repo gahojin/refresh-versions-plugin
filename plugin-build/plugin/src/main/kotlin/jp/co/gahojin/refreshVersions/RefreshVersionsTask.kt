@@ -4,6 +4,7 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
+import jp.co.gahojin.refreshVersions.extension.contentFilter
 import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
 import jp.co.gahojin.refreshVersions.extension.register
 import jp.co.gahojin.refreshVersions.extension.repositoriesWithGlobal
@@ -15,6 +16,8 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.repositories.ArtifactRepository
+import org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
@@ -38,7 +41,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
     private val versionCatalog = project.defaultVersionCatalog
 
-    private val repositoryWithGlobal = project.repositoriesWithGlobal
+    private val repositoryWithGlobal = project.repositoriesWithGlobal.mapNotNull { Repository.from(it) }
 
     private val dependencies = recordBuildscriptAndRegularDependencies(project)
 
@@ -61,11 +64,13 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
         // configuration構文で定義した依存を抽出
         runBlocking {
+            // 実際に使用されているライブラリやプラグインを抽出
             dependencies
                 .forEach {
                     logger.lifecycle("${it.first} : ${it.second.joinToString()}")
                 }
 
+            // ライブラリとプラグインの最新のバージョン情報をダウンロード
             LookupVersionsCandidates(cacheDurationMinutes.get())
                 .execute(repositoryWithGlobal.maven(), versionCatalog.libraries(), emptySet())
                 .filterNotNull()
@@ -73,9 +78,18 @@ abstract class RefreshVersionsTask : DefaultTask() {
                     logger.lifecycle("versions: ${MavenMetadataParser.parse(it).joinToString()}")
                 }
         }
+
+        // バージョンカタログに定義されている情報を取得
         logger.lifecycle("versions ${versionCatalog.versions().entries.joinToString { "${it.key}:${it.value}" }}")
         logger.lifecycle("libraries ${versionCatalog.libraries().joinToString { "${it.group}:${it.name}:${it.versionConstraint}, ${versionCatalog.versions().values.find {v -> it.versionConstraint == v }} " }}")
         logger.lifecycle("plugins ${versionCatalog.plugins().joinToString { "${it.pluginId}:${it.version}" }}")
+
+        // TODO
+        // バージョンカタログに定義されているうち、実際に使用されているものに絞り込む
+        // 絞り込んだライブラリ・プラグインのバージョン情報を取得する
+        // 現在のバージョンより新しいバージョンを抽出
+        // バージョンカタログファイルから以前のバージョン一覧を削除 (cleanタスクと同じ動作)
+        // バージョンカタログファイルに、バージョンの候補コメントを追加
     }
 
     fun recordBuildscriptAndRegularDependencies(rootProject: Project): List<Pair<Dependency, List<Repository>>> {
@@ -90,7 +104,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
     private fun extractDependencies(
         configurations: ConfigurationContainer,
-        repositories: List<Repository>,
+        repositories: List<ArtifactRepository>,
     ): Sequence<Pair<Dependency, List<Repository>>> {
         // TODO 仮実装
         return configurations
@@ -100,8 +114,13 @@ abstract class RefreshVersionsTask : DefaultTask() {
             }.mapNotNull { rawDependency ->
                 val dependency = Dependency.from(rawDependency) ?: return@mapNotNull null
 
-                // TODO リポジトリの制約を使用する
-                dependency to repositories
+                // リポジトリの制約を適用する
+                val filteredRepositories = repositories.filterIsInstance<DefaultMavenArtifactRepository>().filter {
+                    val details = dependency.asArtifactResolutionDetails()
+                    it.contentFilter(details)
+                    details.found
+                }
+                dependency to filteredRepositories.mapNotNull { Repository.from(it) }
             }
     }
 
