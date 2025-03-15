@@ -4,13 +4,16 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.dependency.MavenDependencyVersionsFetcher
+import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
+import jp.co.gahojin.refreshVersions.model.Dependency
+import jp.co.gahojin.refreshVersions.model.DependencyContainer
+import jp.co.gahojin.refreshVersions.model.PluginDependencyCompat
 import jp.co.gahojin.refreshVersions.model.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.minutes
 
@@ -27,18 +30,23 @@ internal class LookupVersionsCandidates(
 
     suspend fun execute(
         repositories: List<Repository.Maven>,
-        versionsCatalogLibraries: Set<MinimalExternalModuleDependency>,
+        versionsCatalogLibraries: Set<Dependency>,
         versionsCatalogPlugins: Set<PluginDependencyCompat>,
-    ): List<String> {
+    ): List<DependencyContainer> {
         return withContext(context) {
             withClient {
-                versionsCatalogLibraries.flatMap { library ->
-                    repositories.mapNotNull { repository ->
+                versionsCatalogLibraries.map { library ->
+                    val versions = repositories.mapNotNull { repository ->
                         repository.createFetcher(
                             client = it,
                             library = library,
                         )?.fetchXmlMetadata()?.getOrNull()
-                    }
+                    }.flatMap { MavenMetadataParser.parse(it) }
+
+                    DependencyContainer(
+                        dependency = library,
+                        updatableVersions = versions.filterAfter(library.version),
+                    )
                 }
             }
         }
@@ -46,9 +54,9 @@ internal class LookupVersionsCandidates(
 
     private fun Repository.Maven.createFetcher(
         client: OkHttpClient,
-        library: MinimalExternalModuleDependency,
+        library: Dependency,
     ): MavenDependencyVersionsFetcher? {
-        val group = library.group.orEmpty()
+        val group = library.group
         val name = library.name
 
         return when (url.scheme) {

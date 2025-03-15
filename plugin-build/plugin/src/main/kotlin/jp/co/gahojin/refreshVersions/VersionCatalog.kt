@@ -3,7 +3,8 @@
  */
 package jp.co.gahojin.refreshVersions
 
-import org.gradle.api.artifacts.MinimalExternalModuleDependency
+import jp.co.gahojin.refreshVersions.model.Dependency
+import jp.co.gahojin.refreshVersions.model.PluginDependencyCompat
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionConstraint
 import kotlin.jvm.optionals.getOrNull
@@ -23,9 +24,10 @@ internal fun VersionCatalog.plugins(): Set<PluginDependencyCompat> {
 
 }
 
-internal fun VersionCatalog.libraries(): Set<MinimalExternalModuleDependency> {
+internal fun VersionCatalog.libraries(): Set<Dependency> {
     return libraryAliases.asSequence()
         .mapNotNull { findLibrary(it).getOrNull()?.orNull }
         .filter { it.version != null }
+        .mapNotNull { Dependency.from(it) }
         .toSet()
 }

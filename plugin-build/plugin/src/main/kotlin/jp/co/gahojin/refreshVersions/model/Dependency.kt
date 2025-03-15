@@ -12,7 +12,7 @@ import org.gradle.api.artifacts.ProjectDependency
 sealed class Dependency {
     abstract val group: String
     abstract val name: String
-    abstract val version: String?
+    abstract val version: String
     abstract val versionConstraint: VersionConstraint?
 
     fun asArtifactResolutionDetails(): ArtifactResolutionDetailsDelegate {
@@ -37,14 +37,14 @@ sealed class Dependency {
     data class General private constructor(
         override val group: String,
         override val name: String,
-        override val version: String?,
+        override val version: String,
     ) : Dependency() {
         override val versionConstraint = null
 
         constructor(dependency: org.gradle.api.artifacts.Dependency) : this(
             group = dependency.group.orEmpty(),
             name = dependency.name,
-            version = dependency.version,
+            version = dependency.version.orEmpty(),
         )
     }
 
@@ -52,13 +52,13 @@ sealed class Dependency {
     data class External private constructor(
         override val group: String,
         override val name: String,
-        override val version: String?,
+        override val version: String,
         override val versionConstraint: VersionConstraint?,
     ) : Dependency() {
         constructor(dependency: ExternalDependency) : this(
             group = dependency.group.orEmpty(),
             name = dependency.name,
-            version = dependency.version,
+            version = dependency.version.orEmpty(),
             versionConstraint = VersionConstraint(dependency.versionConstraint),
         )
     }

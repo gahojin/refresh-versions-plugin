@@ -1,7 +1,7 @@
 /*
  * (C) 2025 GAHOJIN, Inc.
  */
-package jp.co.gahojin.refreshVersions
+package jp.co.gahojin.refreshVersions.model
 
 import org.gradle.api.artifacts.VersionConstraint
 import org.gradle.plugin.use.PluginDependency

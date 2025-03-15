@@ -73,9 +73,8 @@ abstract class RefreshVersionsTask : DefaultTask() {
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
             LookupVersionsCandidates(cacheDurationMinutes.get())
                 .execute(repositoryWithGlobal.maven(), versionCatalog.libraries(), emptySet())
-                .filterNotNull()
                 .forEach {
-                    logger.lifecycle("fetch versions: ${MavenMetadataParser.parse(it).joinToString()}")
+                    logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
                 }
         }
 
