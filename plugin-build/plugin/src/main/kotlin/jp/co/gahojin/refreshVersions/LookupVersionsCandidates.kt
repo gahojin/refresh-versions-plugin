@@ -5,7 +5,11 @@ package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.dependency.MavenDependencyVersionsFetcher
 import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
-import jp.co.gahojin.refreshVersions.model.*
+import jp.co.gahojin.refreshVersions.model.Dependency
+import jp.co.gahojin.refreshVersions.model.DependencyContainer
+import jp.co.gahojin.refreshVersions.model.DependencyProvider
+import jp.co.gahojin.refreshVersions.model.PluginDependencyCompat
+import jp.co.gahojin.refreshVersions.model.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Credentials

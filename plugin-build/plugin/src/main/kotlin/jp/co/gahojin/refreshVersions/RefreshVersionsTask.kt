@@ -3,11 +3,11 @@
  */
 package jp.co.gahojin.refreshVersions
 
-import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
 import jp.co.gahojin.refreshVersions.extension.contentFilter
 import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
 import jp.co.gahojin.refreshVersions.extension.register
 import jp.co.gahojin.refreshVersions.extension.repositoriesWithGlobal
+import jp.co.gahojin.refreshVersions.extension.repositoriesWithPlugin
 import jp.co.gahojin.refreshVersions.model.Dependency
 import jp.co.gahojin.refreshVersions.model.Repository
 import jp.co.gahojin.refreshVersions.model.maven
@@ -23,7 +23,6 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import java.io.File
-
 
 abstract class RefreshVersionsTask : DefaultTask() {
     init {
@@ -104,8 +103,10 @@ abstract class RefreshVersionsTask : DefaultTask() {
     fun recordBuildscriptAndRegularDependencies(rootProject: Project): List<Pair<Dependency, List<Repository>>> {
         val allDependencies = mutableListOf<Pair<Dependency, List<Repository>>>()
         rootProject.allprojects {
-            val repositories = it.repositoriesWithGlobal
-            val dependencies = extractDependencies(it.configurations, repositories)
+            var dependencies = extractDependencies(it.configurations, it.repositoriesWithGlobal)
+            allDependencies.addAll(dependencies)
+
+            dependencies = extractDependencies(it.buildscript.configurations, it.repositoriesWithPlugin)
             allDependencies.addAll(dependencies)
         }
         return allDependencies
