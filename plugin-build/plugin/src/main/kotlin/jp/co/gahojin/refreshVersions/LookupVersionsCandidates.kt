@@ -29,24 +29,45 @@ internal class LookupVersionsCandidates(
         repositories: List<Repository.Maven>,
         versionsCatalogLibraries: Set<MinimalExternalModuleDependency>,
         versionsCatalogPlugins: Set<PluginDependencyCompat>,
-    ): List<String?> {
+    ): List<String> {
         return withContext(context) {
             withClient {
                 versionsCatalogLibraries.flatMap { library ->
-                    repositories.map { repository ->
-                        MavenDependencyVersionsFetcher.ForHttp(
+                    repositories.mapNotNull { repository ->
+                        repository.createFetcher(
                             client = it,
-                            repositoryUrl = repository.url.toString(),
-                            group = library.group.orEmpty(),
-                            name = library.name,
-                            authorization = repository.credentials?.let {
-                                Credentials.basic(it.username, it.password)
-                            },
-                            cacheDuration = cacheDurationMinutes.minutes,
-                        ).fetchXmlMetadata().getOrNull()
+                            library = library,
+                        )?.fetchXmlMetadata()?.getOrNull()
                     }
                 }
             }
+        }
+    }
+
+    private fun Repository.Maven.createFetcher(
+        client: OkHttpClient,
+        library: MinimalExternalModuleDependency,
+    ): MavenDependencyVersionsFetcher? {
+        val group = library.group.orEmpty()
+        val name = library.name
+
+        return when (url.scheme) {
+            "http", "https" -> MavenDependencyVersionsFetcher.ForHttp(
+                group = group,
+                name = name,
+                client = client,
+                repositoryUrl = url.toString(),
+                authorization = credentials?.let {
+                    Credentials.basic(it.username, it.password)
+                },
+                cacheDuration = cacheDurationMinutes.minutes,
+            )
+            "file" -> MavenDependencyVersionsFetcher.ForFile(
+                group = group,
+                name = name,
+                repositoryUrl = url.toString(),
+            )
+            else -> null
         }
     }
 

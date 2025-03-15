@@ -13,7 +13,6 @@ import java.io.File
 import kotlin.time.Duration
 
 internal sealed class MavenDependencyVersionsFetcher(
-    protected val repositoryUrl: String,
     protected val group: String,
     protected val name: String,
 ) {
@@ -26,7 +25,7 @@ internal sealed class MavenDependencyVersionsFetcher(
         name: String,
         private val authorization: String?,
         private val cacheDuration: Duration,
-    ) : MavenDependencyVersionsFetcher(repositoryUrl, group, name) {
+    ) : MavenDependencyVersionsFetcher(group, name) {
         private val metadataUrl = "${repositoryUrl.removeSuffix("/")}/${group.replace('.', '/')}/${name}/maven-metadata.xml"
         private val request = Request.Builder().apply {
             // 一定期間キャッシュする
@@ -52,11 +51,11 @@ internal sealed class MavenDependencyVersionsFetcher(
         repositoryUrl: String,
         group: String,
         name: String,
-    ) : MavenDependencyVersionsFetcher(repositoryUrl, group, name) {
+    ) : MavenDependencyVersionsFetcher(group, name) {
         private val repositoryDir = File(repositoryUrl.substringAfter("file:").removeSuffix("/"))
 
         override suspend fun fetchXmlMetadata() = runCatching {
-            val targetDir = repositoryDir.resolve("${group.replace('.', File.pathSeparatorChar)}/${name}")
+            val targetDir = repositoryDir.resolve("${group.replace('.', File.separatorChar)}/${name}")
             // メタデータのXMLファイルを抽出
             targetDir.walkTopDown()
                 .filter { it.startsWith("maven-metadata") && it.endsWith(".xml") }

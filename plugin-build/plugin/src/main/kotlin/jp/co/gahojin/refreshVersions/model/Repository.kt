@@ -3,6 +3,7 @@
  */
 package jp.co.gahojin.refreshVersions.model
 
+import jp.co.gahojin.refreshVersions.extension.passwordCredentials
 import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository
@@ -38,13 +39,7 @@ sealed class Repository {
         constructor(repository: MavenArtifactRepository) : this(
             name = repository.name,
             url = repository.url,
-            credentials = repository.credentials?.let {
-                PasswordCredentials(
-                    // 認証情報がnullの場合、credentials自体をnullとする
-                    username = it.username ?: return@let null,
-                    password = it.password ?: return@let null,
-                )
-            },
+            credentials = repository.passwordCredentials,
         )
     }
 

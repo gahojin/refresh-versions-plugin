@@ -75,7 +75,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
                 .execute(repositoryWithGlobal.maven(), versionCatalog.libraries(), emptySet())
                 .filterNotNull()
                 .forEach {
-                    logger.lifecycle("versions: ${MavenMetadataParser.parse(it).joinToString()}")
+                    logger.lifecycle("fetch versions: ${MavenMetadataParser.parse(it).joinToString()}")
                 }
         }
 
