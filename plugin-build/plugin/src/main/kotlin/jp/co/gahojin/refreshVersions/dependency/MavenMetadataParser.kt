@@ -14,6 +14,10 @@ import javax.xml.stream.XMLStreamReader
 object MavenMetadataParser {
     fun parse(xml: String): List<Version> {
         val factory: XMLInputFactory = XMLInputFactory.newInstance()
+        // 外部DTDを読み込まない
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false)
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false)
+
         var reader: XMLStreamReader? = null
         var isInTag = false
         val buffer = StringBuilder()
