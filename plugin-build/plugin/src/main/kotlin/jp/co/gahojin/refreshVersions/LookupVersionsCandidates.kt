@@ -5,10 +5,7 @@ package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.dependency.MavenDependencyVersionsFetcher
 import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
-import jp.co.gahojin.refreshVersions.model.Dependency
-import jp.co.gahojin.refreshVersions.model.DependencyContainer
-import jp.co.gahojin.refreshVersions.model.PluginDependencyCompat
-import jp.co.gahojin.refreshVersions.model.Repository
+import jp.co.gahojin.refreshVersions.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Credentials
@@ -28,25 +25,43 @@ internal class LookupVersionsCandidates(
     private val loggingInterceptor = HttpLoggingInterceptor { println(it) }
         .setLevel(logLevel)
 
-    suspend fun execute(
+    suspend fun executeLibrary(
         repositories: List<Repository.Maven>,
         versionsCatalogLibraries: Set<Dependency>,
+    ) = execute(repositories, versionsCatalogLibraries) { dependency, versions ->
+        DependencyContainer.Library(
+            dependency = dependency,
+            updatableVersions = versions,
+        )
+    }
+
+    suspend fun executePlugin(
+        repositories: List<Repository.Maven>,
         versionsCatalogPlugins: Set<PluginDependencyCompat>,
-    ): List<DependencyContainer> {
+    ) = execute(repositories, versionsCatalogPlugins) { dependency, versions ->
+        DependencyContainer.Plugin(
+            dependency = dependency,
+            updatableVersions = versions,
+        )
+    }
+
+    private suspend inline fun <T : DependencyProvider> execute(
+        repositories: List<Repository.Maven>,
+        dependencies: Collection<T>,
+        crossinline block: (T, List<Version>) -> DependencyContainer<T>,
+    ): List<DependencyContainer<T>> {
         return withContext(context) {
-            withClient {
-                versionsCatalogLibraries.map { library ->
+            withClient { client ->
+                dependencies.map {
+                    val dependency = it.getDependency()
                     val versions = repositories.mapNotNull { repository ->
                         repository.createFetcher(
-                            client = it,
-                            library = library,
+                            client = client,
+                            library = dependency,
                         )?.fetchXmlMetadata()?.getOrNull()
-                    }.flatMap { MavenMetadataParser.parse(it) }
+                    }.flatMap(MavenMetadataParser::parse)
 
-                    DependencyContainer(
-                        dependency = library,
-                        updatableVersions = versions.filterAfter(library.version),
-                    )
+                    block(it, versions.filterAfter(dependency.version))
                 }
             }
         }

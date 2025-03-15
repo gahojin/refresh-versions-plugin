@@ -3,10 +3,12 @@
  */
 package jp.co.gahojin.refreshVersions
 
+import jp.co.gahojin.refreshVersions.extension.globalRepositories
 import okhttp3.Cache
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import org.gradle.api.Task
+import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.initialization.Settings
 
 object ConfigHolder {
@@ -17,6 +19,12 @@ object ConfigHolder {
         private set
 
     internal lateinit var cache: Cache
+
+    val globalRepositories: List<ArtifactRepository>
+        get() = settings.globalRepositories
+
+    val pluginRepositories: List<ArtifactRepository>
+        get() = settings.pluginManagement.repositories.asMap.values.toList()
 
     internal fun initialize(settings: Settings) {
         this.settings = settings

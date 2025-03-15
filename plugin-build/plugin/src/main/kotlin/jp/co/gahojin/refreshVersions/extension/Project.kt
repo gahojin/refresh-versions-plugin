@@ -20,7 +20,7 @@ val Project.defaultVersionCatalog: VersionCatalog?
 
 val Project.repositoriesWithGlobal: List<ArtifactRepository>
     get() {
-        val globalRepositories = ConfigHolder.settings.globalRepositories
+        val globalRepositories = ConfigHolder.globalRepositories
         val repositories = when {
             globalRepositories.isEmpty() -> repositories
             repositories.isEmpty() -> globalRepositories

@@ -9,11 +9,13 @@ import org.gradle.api.artifacts.ProjectDependency
 /**
  * 依存情報.
  */
-sealed class Dependency {
+sealed class Dependency : DependencyProvider {
     abstract val group: String
     abstract val name: String
     abstract val version: String
     abstract val versionConstraint: VersionConstraint?
+
+    override fun getDependency(): Dependency = this
 
     fun asArtifactResolutionDetails(): ArtifactResolutionDetailsDelegate {
         return ArtifactResolutionDetailsDelegate(
@@ -60,6 +62,21 @@ sealed class Dependency {
             name = dependency.name,
             version = dependency.version.orEmpty(),
             versionConstraint = VersionConstraint(dependency.versionConstraint),
+        )
+    }
+
+    @ConsistentCopyVisibility
+    data class Plugin private constructor(
+        override val group: String,
+        override val name: String,
+        override val version: String,
+        override val versionConstraint: VersionConstraint?,
+    ) : Dependency() {
+        constructor(dependency: PluginDependencyCompat) : this(
+            group = dependency.pluginId,
+            name = "${dependency.pluginId}.gradle.plugin",
+            version = dependency.version.requiredVersion,
+            versionConstraint = VersionConstraint(dependency.version),
         )
     }
 }

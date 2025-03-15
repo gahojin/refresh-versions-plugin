@@ -43,6 +43,10 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
     private val repositoryWithGlobal = project.repositoriesWithGlobal.mapNotNull { Repository.from(it) }
 
+    private val pluginRepository by lazy {
+        ConfigHolder.pluginRepositories.mapNotNull { Repository.from(it) }
+    }
+
     private val dependencies = recordBuildscriptAndRegularDependencies(project)
 
     @TaskAction
@@ -72,7 +76,13 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
             LookupVersionsCandidates(cacheDurationMinutes.get())
-                .execute(repositoryWithGlobal.maven(), versionCatalog.libraries(), emptySet())
+                .executeLibrary(repositoryWithGlobal.maven(), versionCatalog.libraries())
+                .forEach {
+                    logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
+                }
+
+            LookupVersionsCandidates(cacheDurationMinutes.get())
+                .executePlugin(pluginRepository.maven(), versionCatalog.plugins())
                 .forEach {
                     logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
                 }
@@ -80,7 +90,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
         // バージョンカタログに定義されている情報を取得
         logger.lifecycle("versions ${versionCatalog.versions().entries.joinToString { "${it.key}:${it.value}" }}")
-        logger.lifecycle("libraries ${versionCatalog.libraries().joinToString { "${it.group}:${it.name}:${it.versionConstraint}, ${versionCatalog.versions().values.find {v -> it.versionConstraint == v }} " }}")
+        logger.lifecycle("libraries ${versionCatalog.libraries().joinToString { "${it.group}:${it.name}:${it.versionConstraint}" }}")
         logger.lifecycle("plugins ${versionCatalog.plugins().joinToString { "${it.pluginId}:${it.version}" }}")
 
         // TODO

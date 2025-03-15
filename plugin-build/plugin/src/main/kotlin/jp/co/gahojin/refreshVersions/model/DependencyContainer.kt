@@ -5,7 +5,17 @@ package jp.co.gahojin.refreshVersions.model
 
 import jp.co.gahojin.refreshVersions.Version
 
-data class DependencyContainer(
-    val dependency: Dependency,
-    val updatableVersions: List<Version>,
-)
+sealed interface DependencyContainer<T> {
+    val dependency: T
+    val updatableVersions: List<Version>
+
+    data class Library(
+        override val dependency: Dependency,
+        override val updatableVersions: List<Version>,
+    ) : DependencyContainer<Dependency>
+
+    data class Plugin(
+        override val dependency: PluginDependencyCompat,
+        override val updatableVersions: List<Version>,
+    ) : DependencyContainer<PluginDependencyCompat>
+}
