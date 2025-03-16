@@ -4,29 +4,35 @@
 package jp.co.gahojin.refreshVersions.dependency
 
 import jp.co.gahojin.refreshVersions.HttpException
+import jp.co.gahojin.refreshVersions.model.Version
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
+import org.gradle.api.artifacts.ModuleIdentifier
 import java.io.File
 import kotlin.time.Duration
 
-internal sealed class MavenDependencyVersionsFetcher(
-    protected val group: String,
-    protected val name: String,
-) {
-    abstract suspend fun fetchXmlMetadata(): Result<String?>
+/**
+ * Maven依存バージョン取得.
+ */
+sealed class MavenDependencyVersionsFetcher : DependencyVersionsFetcher {
+    protected abstract suspend fun fetchXmlMetadata(): Result<String?>
+
+    override suspend fun fetchVersions(): List<Version> {
+        val xml = fetchXmlMetadata().getOrNull() ?: return emptyList()
+        return MavenMetadataParser.parse(xml)
+    }
 
     class ForHttp(
         private val client: OkHttpClient,
         repositoryUrl: String,
-        group: String,
-        name: String,
+        moduleId: ModuleIdentifier,
         private val authorization: String?,
         private val cacheDuration: Duration,
-    ) : MavenDependencyVersionsFetcher(group, name) {
-        private val metadataUrl = "${repositoryUrl.removeSuffix("/")}/${group.replace('.', '/')}/${name}/maven-metadata.xml"
+    ) : MavenDependencyVersionsFetcher() {
+        private val metadataUrl = "${repositoryUrl.removeSuffix("/")}/${moduleId.group.replace('.', '/')}/${moduleId.name}/maven-metadata.xml"
         private val request = Request.Builder().apply {
             // 一定期間キャッシュする
             cacheControl(CacheControl.Builder().maxStale(cacheDuration).build())
@@ -49,13 +55,12 @@ internal sealed class MavenDependencyVersionsFetcher(
 
     class ForFile(
         repositoryUrl: String,
-        group: String,
-        name: String,
-    ) : MavenDependencyVersionsFetcher(group, name) {
+        moduleId: ModuleIdentifier,
+    ) : MavenDependencyVersionsFetcher() {
         private val repositoryDir = File(repositoryUrl.substringAfter("file:").removeSuffix("/"))
+        private val targetDir = repositoryDir.resolve("${moduleId.group.replace('.', File.separatorChar)}/${moduleId.name}")
 
         override suspend fun fetchXmlMetadata() = runCatching {
-            val targetDir = repositoryDir.resolve("${group.replace('.', File.separatorChar)}/${name}")
             // メタデータのXMLファイルを抽出
             targetDir.walkTopDown()
                 .filter { it.startsWith("maven-metadata") && it.endsWith(".xml") }

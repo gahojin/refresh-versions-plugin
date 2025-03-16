@@ -3,18 +3,11 @@
  */
 package jp.co.gahojin.refreshVersions
 
-import jp.co.gahojin.refreshVersions.dependency.MavenDependencyVersionsFetcher
-import jp.co.gahojin.refreshVersions.dependency.MavenMetadataParser
-import jp.co.gahojin.refreshVersions.model.Dependency
-import jp.co.gahojin.refreshVersions.model.DependencyContainer
-import jp.co.gahojin.refreshVersions.model.DependencyProvider
-import jp.co.gahojin.refreshVersions.model.PluginDependencyCompat
-import jp.co.gahojin.refreshVersions.model.Repository
-import jp.co.gahojin.refreshVersions.model.Version
+import jp.co.gahojin.refreshVersions.model.DependencyWithRepository
+import jp.co.gahojin.refreshVersions.model.UpdatableDependency
 import jp.co.gahojin.refreshVersions.model.filterAfter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.gradle.api.logging.Logger
@@ -34,72 +27,24 @@ internal class LookupVersionsCandidates(
         logger.lifecycle(it)
     }.setLevel(logLevel)
 
-    suspend fun executeLibrary(
-        repositories: List<Repository.Maven>,
-        versionsCatalogLibraries: Set<Dependency>,
-    ) = execute(repositories, versionsCatalogLibraries) { dependency, versions ->
-        DependencyContainer.Library(
-            dependency = dependency,
-            updatableVersions = versions,
-        )
-    }
-
-    suspend fun executePlugin(
-        repositories: List<Repository.Maven>,
-        versionsCatalogPlugins: Set<PluginDependencyCompat>,
-    ) = execute(repositories, versionsCatalogPlugins) { dependency, versions ->
-        DependencyContainer.Plugin(
-            dependency = dependency,
-            updatableVersions = versions,
-        )
-    }
-
-    private suspend inline fun <T : DependencyProvider> execute(
-        repositories: List<Repository.Maven>,
-        dependencies: Collection<T>,
-        crossinline block: (T, List<Version>) -> DependencyContainer<T>,
-    ): List<DependencyContainer<T>> {
+    suspend fun execute(dependencies: List<DependencyWithRepository>): List<UpdatableDependency> {
         return withContext(context) {
             withClient { client ->
-                dependencies.map {
-                    val dependency = it.getDependency()
-                    val versions = repositories.mapNotNull { repository ->
+                dependencies.map { (dependency, repositories) ->
+                    val versions = repositories.flatMap { repository ->
                         repository.createFetcher(
                             client = client,
                             library = dependency,
-                        )?.fetchXmlMetadata()?.getOrNull()
-                    }.flatMap(MavenMetadataParser::parse)
+                            cacheDuration = cacheDurationMinutes.minutes,
+                        ).fetchVersions()
+                    }
 
-                    block(it, versions.filterAfter(dependency.version))
+                    UpdatableDependency(
+                        dependency = dependency,
+                        updatableVersions = versions.filterAfter(dependency.version),
+                    )
                 }
             }
-        }
-    }
-
-    private fun Repository.Maven.createFetcher(
-        client: OkHttpClient,
-        library: Dependency,
-    ): MavenDependencyVersionsFetcher? {
-        val group = library.group
-        val name = library.name
-
-        return when (url.scheme) {
-            "http", "https" -> MavenDependencyVersionsFetcher.ForHttp(
-                group = group,
-                name = name,
-                client = client,
-                repositoryUrl = url.toString(),
-                authorization = credentials?.let {
-                    Credentials.basic(it.username, it.password)
-                },
-                cacheDuration = cacheDurationMinutes.minutes,
-            )
-            "file" -> MavenDependencyVersionsFetcher.ForFile(
-                group = group,
-                name = name,
-                repositoryUrl = url.toString(),
-            )
-            else -> null
         }
     }
 

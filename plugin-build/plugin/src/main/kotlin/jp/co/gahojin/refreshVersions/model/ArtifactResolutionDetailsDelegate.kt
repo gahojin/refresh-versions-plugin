@@ -8,20 +8,35 @@ import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.internal.artifacts.repositories.ArtifactResolutionDetails
 
 class ArtifactResolutionDetailsDelegate(
-    val group: String,
-    val name: String,
+    private val moduleId: ModuleId,
+    private val version: String,
 ) : ArtifactResolutionDetails {
     var found: Boolean = true
         private set
 
-    override fun getModuleId(): ModuleIdentifier {
-        return object : ModuleIdentifier {
-            override fun getGroup() = this@ArtifactResolutionDetailsDelegate.group
-            override fun getName() = this@ArtifactResolutionDetailsDelegate.name
+    private val componentId by lazy {
+        object : ModuleComponentIdentifier {
+            override fun getDisplayName() = "$moduleId:$version"
+            override fun getGroup() = moduleId.group
+            override fun getModule() = moduleId.name
+            override fun getVersion() = this@ArtifactResolutionDetailsDelegate.version
+            override fun getModuleIdentifier() = moduleId
         }
     }
 
-    override fun getComponentId(): ModuleComponentIdentifier? = null
+    constructor(
+        moduleId: ModuleIdentifier,
+        version: String,
+    ) : this(
+        moduleId = ModuleId(moduleId),
+        version = version,
+    )
+
+    override fun getModuleId() = moduleId
+
+    override fun getComponentId(): ModuleComponentIdentifier {
+        return componentId
+    }
 
     override fun isVersionListing(): Boolean = true
 

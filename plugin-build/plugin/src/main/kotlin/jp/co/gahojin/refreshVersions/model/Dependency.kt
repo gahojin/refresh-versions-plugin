@@ -4,23 +4,22 @@
 package jp.co.gahojin.refreshVersions.model
 
 import org.gradle.api.artifacts.ExternalDependency
+import org.gradle.api.artifacts.ModuleIdentifier
 import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.plugin.use.PluginDependency
 
 /**
  * 依存情報.
  */
-sealed class Dependency : DependencyProvider {
-    abstract val group: String
-    abstract val name: String
-    abstract val version: String
-    abstract val versionConstraint: VersionConstraint?
-
-    override fun getDependency(): Dependency = this
+sealed interface Dependency {
+    val moduleId: ModuleIdentifier
+    val version: String
+    val versionConstraint: VersionConstraint?
 
     fun asArtifactResolutionDetails(): ArtifactResolutionDetailsDelegate {
         return ArtifactResolutionDetailsDelegate(
-            group = group,
-            name = name,
+            moduleId = moduleId,
+            version = version,
         )
     }
 
@@ -33,33 +32,36 @@ sealed class Dependency : DependencyProvider {
                 else -> General(dependency)
             }
         }
+
+        fun from(dependency: PluginDependency): Dependency? {
+            return Plugin(dependency)
+        }
     }
 
     @ConsistentCopyVisibility
     data class General private constructor(
-        override val group: String,
-        override val name: String,
+        override val moduleId: ModuleIdentifier,
         override val version: String,
-    ) : Dependency() {
+    ) : Dependency {
         override val versionConstraint = null
 
         constructor(dependency: org.gradle.api.artifacts.Dependency) : this(
-            group = dependency.group.orEmpty(),
-            name = dependency.name,
+            moduleId = ModuleId(
+                group = dependency.group.orEmpty(),
+                name = dependency.name,
+            ),
             version = dependency.version.orEmpty(),
         )
     }
 
     @ConsistentCopyVisibility
     data class External private constructor(
-        override val group: String,
-        override val name: String,
+        override val moduleId: ModuleIdentifier,
         override val version: String,
         override val versionConstraint: VersionConstraint?,
-    ) : Dependency() {
+    ) : Dependency {
         constructor(dependency: ExternalDependency) : this(
-            group = dependency.group.orEmpty(),
-            name = dependency.name,
+            moduleId = ModuleId(dependency.module),
             version = dependency.version.orEmpty(),
             versionConstraint = VersionConstraint(dependency.versionConstraint),
         )
@@ -67,14 +69,17 @@ sealed class Dependency : DependencyProvider {
 
     @ConsistentCopyVisibility
     data class Plugin private constructor(
-        override val group: String,
-        override val name: String,
+        val pluginId: String,
+        override val moduleId: ModuleIdentifier,
         override val version: String,
         override val versionConstraint: VersionConstraint?,
-    ) : Dependency() {
-        constructor(dependency: PluginDependencyCompat) : this(
-            group = dependency.pluginId,
-            name = "${dependency.pluginId}.gradle.plugin",
+    ) : Dependency {
+        constructor(dependency: PluginDependency) : this(
+            pluginId = dependency.pluginId,
+            moduleId = ModuleId(
+                group = dependency.pluginId,
+                name = "${dependency.pluginId}.gradle.plugin",
+            ),
             version = dependency.version.requiredVersion,
             versionConstraint = VersionConstraint(dependency.version),
         )
