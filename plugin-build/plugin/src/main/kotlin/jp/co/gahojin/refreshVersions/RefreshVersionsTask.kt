@@ -33,6 +33,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
     private val versionCatalog = project.defaultVersionCatalog
 
     private val dependencies by lazy {
+        // 実際に使用されているライブラリやプラグインを抽出
         ExtractorDependency().extract(project)
     }
 
@@ -45,9 +46,6 @@ abstract class RefreshVersionsTask : DefaultTask() {
             logger.lifecycle("versionsCatalog disabled.")
             return
         }
-        logger.lifecycle("versions ${versionCatalog.versions().entries.joinToString { "${it.key}:${it.value}" }}")
-        logger.lifecycle("libraries ${versionCatalog.libraries().joinToString { "${it.moduleId}:${it.version}" }}")
-        logger.lifecycle("plugins ${versionCatalog.plugins().joinToString { "${it.moduleId}:${it.version}" }}")
 
         // TOMLファイルに定義されている情報を取得
         val file = requireNotNull(versionsTomlFile.orNull)
@@ -61,11 +59,6 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
         // configuration構文で定義した依存を抽出
         runBlocking {
-            // 実際に使用されているライブラリやプラグインを抽出
-            dependencies
-                .forEach {
-                    logger.lifecycle("${it.dependency} : ${it.repositories.joinToString()}")
-                }
             // バージョンカタログにあり、実際に使用されているものに絞り込む
             val libraryDependencies = versionCatalog.libraries().withDependencies(dependencies)
             val pluginDependencies = versionCatalog.plugins().withDependencies(dependencies)
@@ -83,7 +76,6 @@ abstract class RefreshVersionsTask : DefaultTask() {
         }
 
         // TODO
-        // 現在のバージョンより新しいバージョンを抽出
         // バージョンカタログファイルから以前のバージョン一覧を削除 (cleanタスクと同じ動作)
         // バージョンカタログファイルに、バージョンの候補コメントを追加
     }

@@ -37,7 +37,7 @@ internal class LookupVersionsCandidates(
                             library = dependency,
                             cacheDuration = cacheDurationMinutes.minutes,
                         ).fetchVersions()
-                    }
+                    }.toSortedSet()
 
                     UpdatableDependency(
                         dependency = dependency,

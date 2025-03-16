@@ -20,15 +20,14 @@ fun VersionCatalog.plugins() = pluginAliases.asSequence()
 
 fun VersionCatalog.libraries() = libraryAliases.asSequence()
     .mapNotNull { findLibrary(it).getOrNull()?.orNull }
-    .filter { it.version != null }
     .mapNotNull { Dependency.from(it) }
     .toSet()
 
 fun Set<Dependency>.withDependencies(
     dependencies: List<DependencyWithRepository>,
 ): List<DependencyWithRepository> {
-    val modules = map { it.moduleId }.toSet()
+    val modules = map { it.moduleId to it.version }.toSet()
     return dependencies.filter { (dependency, _) ->
-        modules.contains(dependency.moduleId)
+        modules.contains(dependency.moduleId to dependency.version)
     }
 }

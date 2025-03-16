@@ -25,6 +25,10 @@ sealed interface Dependency {
 
     companion object {
         fun from(dependency: org.gradle.api.artifacts.Dependency): Dependency? {
+            // バージョンが未定義の場合、処理対象外
+            if (dependency.version == null) {
+                return null
+            }
             return when (dependency) {
                 // project参照の依存は無視する
                 is ProjectDependency -> null

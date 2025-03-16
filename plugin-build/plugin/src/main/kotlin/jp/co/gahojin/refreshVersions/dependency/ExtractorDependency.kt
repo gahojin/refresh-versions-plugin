@@ -32,9 +32,8 @@ class ExtractorDependency {
     ): Sequence<DependencyWithRepository> {
         return configurations
             .asSequence()
-            .flatMap {
-                it.dependencies.asSequence()
-            }.mapNotNull { rawDependency ->
+            .flatMap { it.dependencies.asSequence() }
+            .mapNotNull { rawDependency ->
                 // 処理出来ない依存は無視する
                 val dependency = Dependency.from(rawDependency) ?: return@mapNotNull null
 
