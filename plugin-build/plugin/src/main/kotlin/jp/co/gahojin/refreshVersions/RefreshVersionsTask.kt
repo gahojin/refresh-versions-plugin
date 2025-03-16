@@ -74,14 +74,14 @@ abstract class RefreshVersionsTask : DefaultTask() {
                 }
 
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
-            LookupVersionsCandidates(cacheDurationMinutes.get(), logger)
-                .executeLibrary(repositoryWithGlobal.maven(), versionCatalog.libraries())
+            val lookupVersionsCandidates = LookupVersionsCandidates(cacheDurationMinutes.get(), logger)
+
+            lookupVersionsCandidates.executeLibrary(repositoryWithGlobal.maven(), versionCatalog.libraries())
                 .forEach {
                     logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
                 }
 
-            LookupVersionsCandidates(cacheDurationMinutes.get(), logger)
-                .executePlugin(pluginRepository.maven(), versionCatalog.plugins())
+            lookupVersionsCandidates.executePlugin(pluginRepository.maven(), versionCatalog.plugins())
                 .forEach {
                     logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
                 }
@@ -125,7 +125,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
                 val dependency = Dependency.from(rawDependency) ?: return@mapNotNull null
 
                 // リポジトリの制約を適用する
-                val filteredRepositories = repositories.filterIsInstance<DefaultMavenArtifactRepository>().filter {
+                val filteredRepositories = repositories.filter {
                     val details = dependency.asArtifactResolutionDetails()
                     it.contentFilter(details)
                     details.found
