@@ -1,7 +1,7 @@
 /*
  * (C) 2025 GAHOJIN, Inc.
  */
-package jp.co.gahojin.refreshVersions
+package jp.co.gahojin.refreshVersions.model
 
 /**
  * バージョン情報

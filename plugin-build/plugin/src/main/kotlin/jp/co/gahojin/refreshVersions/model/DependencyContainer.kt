@@ -3,8 +3,6 @@
  */
 package jp.co.gahojin.refreshVersions.model
 
-import jp.co.gahojin.refreshVersions.Version
-
 sealed interface DependencyContainer<T> {
     val dependency: T
     val updatableVersions: List<Version>

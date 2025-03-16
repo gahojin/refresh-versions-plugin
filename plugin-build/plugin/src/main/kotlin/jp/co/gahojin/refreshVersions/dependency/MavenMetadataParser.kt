@@ -3,7 +3,7 @@
  */
 package jp.co.gahojin.refreshVersions.dependency
 
-import jp.co.gahojin.refreshVersions.Version
+import jp.co.gahojin.refreshVersions.model.Version
 import java.io.StringReader
 import javax.xml.stream.XMLInputFactory
 import javax.xml.stream.XMLStreamReader
