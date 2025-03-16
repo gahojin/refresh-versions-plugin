@@ -50,7 +50,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
         // TOMLファイルに定義されている情報を取得
         val file = requireNotNull(versionsTomlFile.orNull)
         val toml = if (file.exists()) {
-            TomlFile.parseToml(file.readText())
+            TomlFile.parseToml(file.bufferedReader())
         } else {
             logger.lifecycle("versionsCatalog file not found.")
             return

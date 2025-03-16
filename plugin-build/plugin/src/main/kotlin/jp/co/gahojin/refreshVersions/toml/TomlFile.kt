@@ -4,10 +4,14 @@
 package jp.co.gahojin.refreshVersions.toml
 
 import jp.co.gahojin.refreshVersions.Constants
+import java.io.Reader
 
 data class TomlFile(
     val sections: MutableMap<TomlSection, List<TomlLine>>,
 ) {
+    val isEmpty: Boolean
+        get() = sections.size <= 1 && sections[TomlSection.Root]?.isEmpty() ?: true
+
     override fun toString() = format(false)
 
     internal operator fun get(section: TomlSection): List<TomlLine> {
@@ -72,14 +76,13 @@ data class TomlFile(
     private fun sortedSections() = (Constants.orderTomlSections + sections.keys).toSet()
 
     companion object {
-        fun parseToml(toml: String): TomlFile {
+        fun parseToml(reader: Reader): TomlFile {
             val result = linkedMapOf<TomlSection, List<TomlLine>>()
             var section: TomlSection = TomlSection.Root
             var current = mutableListOf<TomlLine>()
             result[section] = current
 
-            val lines = toml.lines()
-            for (line in lines) {
+            reader.forEachLine { line ->
                 val trimmedLine = line.trim()
                 if (trimmedLine.startsWith("[") && trimmedLine.endsWith("]")) {
                     // in Section

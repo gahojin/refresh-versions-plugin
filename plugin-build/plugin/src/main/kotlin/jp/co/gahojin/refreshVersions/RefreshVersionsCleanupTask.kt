@@ -26,7 +26,9 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
     fun cleanUp() {
         val file = requireNotNull(versionsTomlFile.orNull)
         if (file.exists()) {
-            val content = VersionCatalogCleaner.execute(file.readText(), sortSection.getOrElse(false))
+            val content = file.bufferedReader().use { reader ->
+                VersionCatalogCleaner.execute(reader, sortSection.getOrElse(false))
+            }
             file.writeText(content)
         }
     }
