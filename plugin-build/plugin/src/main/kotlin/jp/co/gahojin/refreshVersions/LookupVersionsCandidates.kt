@@ -10,11 +10,14 @@ import jp.co.gahojin.refreshVersions.model.DependencyContainer
 import jp.co.gahojin.refreshVersions.model.DependencyProvider
 import jp.co.gahojin.refreshVersions.model.PluginDependencyCompat
 import jp.co.gahojin.refreshVersions.model.Repository
+import jp.co.gahojin.refreshVersions.model.Version
+import jp.co.gahojin.refreshVersions.model.filterAfter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.gradle.api.logging.Logger
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.minutes
 
@@ -23,11 +26,13 @@ import kotlin.time.Duration.Companion.minutes
  */
 internal class LookupVersionsCandidates(
     private val cacheDurationMinutes: Int,
+    logger: Logger,
     logLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BASIC,
     private val context: CoroutineContext = Dispatchers.IO,
 ) {
-    private val loggingInterceptor = HttpLoggingInterceptor { println(it) }
-        .setLevel(logLevel)
+    private val loggingInterceptor = HttpLoggingInterceptor {
+        logger.lifecycle(it)
+    }.setLevel(logLevel)
 
     suspend fun executeLibrary(
         repositories: List<Repository.Maven>,

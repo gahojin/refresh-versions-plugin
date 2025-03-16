@@ -74,13 +74,13 @@ abstract class RefreshVersionsTask : DefaultTask() {
                 }
 
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
-            LookupVersionsCandidates(cacheDurationMinutes.get())
+            LookupVersionsCandidates(cacheDurationMinutes.get(), logger)
                 .executeLibrary(repositoryWithGlobal.maven(), versionCatalog.libraries())
                 .forEach {
                     logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
                 }
 
-            LookupVersionsCandidates(cacheDurationMinutes.get())
+            LookupVersionsCandidates(cacheDurationMinutes.get(), logger)
                 .executePlugin(pluginRepository.maven(), versionCatalog.plugins())
                 .forEach {
                     logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
