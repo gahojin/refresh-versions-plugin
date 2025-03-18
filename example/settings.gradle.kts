@@ -23,9 +23,14 @@ dependencyResolutionManagement {
         mavenCentral()
         mavenLocal()
     }
+    versionCatalogs {
+        register("libs") {
+            from(files("gradle/custom.versions.toml"))
+        }
+    }
 }
 
 refreshVersions {
     cacheDurationMinutes = 120
-//    versionsTomlFile = file("gradle/lib.versions.toml")
+    versionsTomlFile = file("gradle/custom.versions.toml")
 }
