@@ -10,12 +10,6 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
-
-    versionCatalogs {
-        register("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
-    }
 }
 
 rootProject.name = "jp.co.gahojin.refreshVersions"
