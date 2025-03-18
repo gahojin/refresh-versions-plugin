@@ -156,7 +156,7 @@ class Version(
                         return buf.substring(i)
                     }
                 }
-                return buf
+                buf
             }
         }
     }
@@ -193,10 +193,10 @@ internal sealed interface Item : Comparable<Item?> {
     class NumberItem(
         val value: BigInteger,
     ) : Item {
-        constructor(value: String) : this(BigInteger(value))
-
         override val isNull: Boolean
             get() = BigInteger.ZERO == value
+
+        constructor(value: String) : this(BigInteger(value))
 
         override fun compareTo(other: Item?): Int {
             return other?.let {
