@@ -4,7 +4,6 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.toml.TomlFile
-import jp.co.gahojin.refreshVersions.toml.TomlSection
 import java.io.Reader
 
 internal object VersionCatalogCleaner {
@@ -16,13 +15,7 @@ internal object VersionCatalogCleaner {
         if (toml.isEmpty) {
             return ""
         }
-
-        toml.sections
-            .filterNot { it.key == TomlSection.Root }
-            .forEach { (section, lines) ->
-                toml[section] = lines.filterNot { it.text.startsWith("##") }
-            }
-
+        toml.removeComments()
         return toml.format(sortSection)
     }
 }

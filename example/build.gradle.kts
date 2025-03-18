@@ -1,6 +1,7 @@
 plugins {
     id("java")
     alias(libs.plugins.dokka)
+    alias(libs.plugins.detekt)
 }
 
 dependencies {

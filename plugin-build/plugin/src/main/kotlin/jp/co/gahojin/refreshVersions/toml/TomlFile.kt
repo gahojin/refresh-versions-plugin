@@ -5,6 +5,8 @@ package jp.co.gahojin.refreshVersions.toml
 
 import jp.co.gahojin.refreshVersions.Constants
 import java.io.Reader
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 data class TomlFile(
     val sections: MutableMap<TomlSection, List<TomlLine>>,
@@ -40,6 +42,17 @@ data class TomlFile(
                 appendLine(content)
             }
         }
+    }
+
+    /**
+     * 以前のバージョンコメントの削除
+     */
+    fun removeComments() {
+        sections
+            .filterNot { it.key == TomlSection.Root }
+            .forEach { (section, lines) ->
+                set(section, lines.filterNot { it.text.startsWith("##") })
+            }
     }
 
     private fun List<TomlLine>.removeDuplicateBlanks(): List<TomlLine> {

@@ -7,6 +7,7 @@ import jp.co.gahojin.refreshVersions.dependency.ExtractorDependency
 import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
 import jp.co.gahojin.refreshVersions.extension.register
 import jp.co.gahojin.refreshVersions.toml.TomlFile
+import jp.co.gahojin.refreshVersions.toml.TomlSection
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -55,7 +56,6 @@ abstract class RefreshVersionsTask : DefaultTask() {
             logger.lifecycle("versionsCatalog file not found.")
             return
         }
-        logger.lifecycle("toml loaded. $toml")
 
         // configuration構文で定義した依存を抽出
         runBlocking {
@@ -65,19 +65,15 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
             val lookupVersionsCandidates = LookupVersionsCandidates(cacheDurationMinutes.get(), logger)
-            lookupVersionsCandidates.execute(libraryDependencies)
-                .forEach {
-                    logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
-                }
-            lookupVersionsCandidates.execute(pluginDependencies)
-                .forEach {
-                    logger.lifecycle("fetch versions: ${it.dependency} > ${it.updatableVersions.joinToString()}")
-                }
-        }
+            val libraryUpdatableDependencies = lookupVersionsCandidates.execute(libraryDependencies)
+            val pluginUpdatableDependencies = lookupVersionsCandidates.execute(pluginDependencies)
 
-        // TODO
-        // バージョンカタログファイルから以前のバージョン一覧を削除 (cleanタスクと同じ動作)
-        // バージョンカタログファイルに、バージョンの候補コメントを追加
+            // バージョンカタログファイルを更新
+            toml.removeComments()
+            VersionCatalogUpdater.execute(toml, TomlSection.Libraries, libraryUpdatableDependencies)
+            VersionCatalogUpdater.execute(toml, TomlSection.Plugins, pluginUpdatableDependencies)
+            file.writeText(toml.format(sortSection.getOrElse(false)))
+        }
     }
 
     companion object {

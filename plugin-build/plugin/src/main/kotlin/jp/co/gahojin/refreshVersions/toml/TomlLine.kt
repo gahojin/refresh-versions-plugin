@@ -3,6 +3,9 @@
  */
 package jp.co.gahojin.refreshVersions.toml
 
+import jp.co.gahojin.refreshVersions.model.ModuleId
+import org.gradle.api.artifacts.ModuleIdentifier
+
 data class TomlLine(
     val section: TomlSection,
     val text: String,
@@ -13,28 +16,38 @@ data class TomlLine(
 
     val value = if (hasKey) textWithoutComment.substringAfter('=').trim() else ""
 
-    val attributes: Map<String, String> = parseLine(section, value)
+    val attributes: Map<String, String> = parseLine(section, value.unquote())
+
+    val isEmptyLine: Boolean = value.isBlank()
 
     val id by attributes
 
-    val group: String
-        get() = if (section == TomlSection.Plugins) id else attributes.getOrDefault("group", "")
+    val group: String by lazy {
+        if (section == TomlSection.Plugins) id else attributes.getOrDefault("group", "")
+    }
 
-    val name: String
-        get() = if (section == TomlSection.Plugins) "$id.gradle.plugin" else attributes.getOrDefault("name", "")
+    val name: String by lazy {
+        if (section == TomlSection.Plugins) "$id.gradle.plugin" else attributes.getOrDefault("name", "")
+    }
 
-    val version: String
-        get() = if (section == TomlSection.Versions) value.unquote() else attributes.getOrDefault("version", "")
+    val version: String by lazy {
+        if (section == TomlSection.Versions) value.unquote() else attributes.getOrDefault("version", "")
+    }
 
-    val versionRef: String
-        get() = attributes.getOrDefault("version.ref", "")
+    val versionRef: String by lazy {
+        attributes.getOrDefault("version.ref", "")
+    }
+
+    val moduleId: ModuleIdentifier by lazy {
+        ModuleId(group = group, name = name)
+    }
 
     override fun toString(): String = "TomlLine(section=${section}, key=${key}, value=${value}, attributes=${attributes}\n$text"
 
     companion object {
         val NEW_LINE = TomlLine(TomlSection.Custom("blank"), "")
 
-        private fun String.unquote() = trim().removeSurrounding("\"").trim()
+        private fun String.unquote() = trim().removeSurrounding("\"")
 
         private fun parseLine(section: TomlSection, value: String): Map<String, String> {
             val splitByColon = value.split(':')
@@ -46,7 +59,7 @@ data class TomlLine(
                         getAttributes(value)
                     } else if (splitByColon.size > 1) {
                         buildMap<String, String> {
-                            put("id", splitByColon[0])
+                            put("id", splitByColon[0].trim())
                             put("version", splitByColon[1])
                         }
                     } else emptyMap()
@@ -58,7 +71,7 @@ data class TomlLine(
                                 // module構文はgroup:nameなので分割する
                                 val tmp = it.split(':', limit = 2)
                                 if (tmp.size == 2) {
-                                    attributes["group"] = tmp[0].trim()
+                                    attributes["group"] = tmp[0]
                                     attributes["name"] = tmp[1].trim()
                                 }
                                 attributes.remove("module")
@@ -66,7 +79,7 @@ data class TomlLine(
                         }
                     } else buildMap<String, String> {
                         put("group", splitByColon[0])
-                        if (splitByColon.size > 1) put("name", splitByColon[1])
+                        if (splitByColon.size > 1) put("name", splitByColon[1].trim())
                         if (splitByColon.size > 2) put("version", splitByColon[2])
                     }
                 }
@@ -84,25 +97,4 @@ data class TomlLine(
                 }.toMutableMap()
         }
     }
-}
-
-internal fun TomlLine(
-    section: TomlSection,
-    key: String,
-    value: String,
-): TomlLine = TomlLine(
-    section = section,
-    text = "$key = \"$value\"",
-)
-
-internal fun TomlLine(
-    section: TomlSection,
-    key: String,
-    values: Map<String, String>,
-): TomlLine {
-    require(values.isNotEmpty())
-    val formatMap = values.entries.joinToString(", ") { (k, v) ->
-        "$k = \"$v\""
-    }
-    return TomlLine(section = section, key = key, value = formatMap)
 }
