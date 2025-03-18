@@ -26,8 +26,6 @@ zero-allocation-hashing = "0.26ea0"
 detekt = "io.gitlab.arturbosch.detekt:1.23.7"
 ##                                 ^ "1.23.8"
 
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm",     version.ref = "kotlin" }
 
 [libraries]
