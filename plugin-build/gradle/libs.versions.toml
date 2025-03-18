@@ -20,6 +20,8 @@ detekt = "1.23.8"
 
 dokka = "2.0.0"
 
+fastxml-woodstox = "7.1.0"
+
 kotest = "5.9.1"
 
 kotlin = "2.1.10"
@@ -37,6 +39,8 @@ okhttp = "5.0.0-alpha.14"
 okio = "3.10.2"
 
 [libraries]
+
+fastxml-woodstox = { group = "com.fasterxml.woodstox", name = "woodstox-core", version.ref = "fastxml-woodstox" }
 
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
 
