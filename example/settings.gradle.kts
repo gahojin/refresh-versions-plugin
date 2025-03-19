@@ -1,14 +1,13 @@
 pluginManagement {
     repositories {
-//        mavenLocal()
-        gradlePluginPortal()
+        mavenCentral()
     }
-    includeBuild("../plugin-build")
+//    includeBuild("../plugin-build")
 }
 
 plugins {
-    id("jp.co.gahojin.refreshVersions")
-//    id("jp.co.gahojin.refreshVersions") version "0.0.1"
+//    id("jp.co.gahojin.refreshVersions")
+    id("jp.co.gahojin.refreshVersions") version "0.0.1"
 }
 
 dependencyResolutionManagement {
