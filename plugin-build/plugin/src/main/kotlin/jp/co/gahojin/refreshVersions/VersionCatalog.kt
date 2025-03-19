@@ -15,19 +15,19 @@ fun VersionCatalog.versions() = versionAliases.mapNotNull {
 
 fun VersionCatalog.plugins() = pluginAliases.asSequence()
     .mapNotNull { findPlugin(it).getOrNull()?.orNull }
-    .mapNotNull { Dependency.from(it) }
+    .map { Dependency.from(it) }
     .toSet()
 
 fun VersionCatalog.libraries() = libraryAliases.asSequence()
     .mapNotNull { findLibrary(it).getOrNull()?.orNull }
-    .mapNotNull { Dependency.from(it) }
+    .mapNotNull { Dependency.from(it as org.gradle.api.artifacts.Dependency) }
     .toSet()
 
 fun Set<Dependency>.withDependencies(
     dependencies: List<DependencyWithRepository>,
 ): List<DependencyWithRepository> {
     val modules = map { it.moduleId to it.version }.toSet()
-    return dependencies.filter { (dependency, _) ->
+    return dependencies.sortedBy { it.dependency }.filter { (dependency, _) ->
         modules.contains(dependency.moduleId to dependency.version)
     }
 }

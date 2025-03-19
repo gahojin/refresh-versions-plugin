@@ -1,6 +1,7 @@
 plugins {
     id("java")
     alias(libs.plugins.detekt)
+    alias(libs.plugins.dokka)
 }
 
 dependencies {
@@ -13,4 +14,11 @@ dependencies {
     testImplementation(platform(libs.kotest.bom))
     testImplementation("io.mockk:mockk:1.13.16")
     testImplementation(libs.truth)
+}
+
+// resolutionStrategyを認識出来ていうるか
+configurations.all {
+    resolutionStrategy {
+        force(libs.fastxml.woodstox)
+    }
 }
