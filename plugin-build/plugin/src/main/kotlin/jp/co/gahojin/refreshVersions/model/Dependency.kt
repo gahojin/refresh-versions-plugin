@@ -5,16 +5,25 @@ package jp.co.gahojin.refreshVersions.model
 
 import org.gradle.api.artifacts.ExternalDependency
 import org.gradle.api.artifacts.ModuleIdentifier
+import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.plugin.use.PluginDependency
 
 /**
  * 依存情報.
  */
-sealed interface Dependency {
-    val moduleId: ModuleIdentifier
+sealed interface Dependency : Comparable<Dependency> {
+    val moduleId: ModuleId
     val version: String
     val versionConstraint: VersionConstraint?
+
+    override fun compareTo(other: Dependency): Int {
+        var ret = moduleId.compareTo(other.moduleId)
+        if (ret == 0) {
+            ret = version.compareTo(other.version)
+        }
+        return ret
+    }
 
     fun asArtifactResolutionDetails(): ArtifactResolutionDetailsDelegate {
         return ArtifactResolutionDetailsDelegate(
@@ -37,14 +46,18 @@ sealed interface Dependency {
             }
         }
 
-        fun from(dependency: PluginDependency): Dependency? {
+        fun from(dependency: PluginDependency): Dependency {
             return Plugin(dependency)
+        }
+
+        fun from(dependency: ModuleVersionSelector): Dependency {
+            return ForceModule(dependency)
         }
     }
 
     @ConsistentCopyVisibility
     data class General private constructor(
-        override val moduleId: ModuleIdentifier,
+        override val moduleId: ModuleId,
         override val version: String,
     ) : Dependency {
         override val versionConstraint = null
@@ -60,7 +73,7 @@ sealed interface Dependency {
 
     @ConsistentCopyVisibility
     data class External private constructor(
-        override val moduleId: ModuleIdentifier,
+        override val moduleId: ModuleId,
         override val version: String,
         override val versionConstraint: VersionConstraint?,
     ) : Dependency {
@@ -74,7 +87,7 @@ sealed interface Dependency {
     @ConsistentCopyVisibility
     data class Plugin private constructor(
         val pluginId: String,
-        override val moduleId: ModuleIdentifier,
+        override val moduleId: ModuleId,
         override val version: String,
         override val versionConstraint: VersionConstraint?,
     ) : Dependency {
@@ -86,6 +99,22 @@ sealed interface Dependency {
             ),
             version = dependency.version.requiredVersion,
             versionConstraint = VersionConstraint(dependency.version),
+        )
+    }
+
+    @ConsistentCopyVisibility
+    data class ForceModule private constructor(
+        override val moduleId: ModuleId,
+        override val version: String,
+    ) : Dependency {
+        override val versionConstraint = null
+
+        constructor(moduleSelector: ModuleVersionSelector) : this(
+            moduleId = ModuleId(
+                group = moduleSelector.group,
+                name = moduleSelector.name,
+            ),
+            version = moduleSelector.version.orEmpty(),
         )
     }
 }

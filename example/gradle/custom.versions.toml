@@ -2,9 +2,14 @@
 
 [versions]
 
+# 参照のないバージョン定義
 detekt = "1.22.0"
 
 dokka = "2.0.0"
+
+# resolutionStrategyで参照されている
+fastxml-woodstox = "7.0.0"
+##               ^ "7.1.0"
 
 kotlin = "2.1.0"
 ##     ^ "2.1.10-RC"
@@ -26,9 +31,13 @@ zero-allocation-hashing = "0.26ea0"
 detekt = "io.gitlab.arturbosch.detekt:1.23.7"
 ##                                 ^ "1.23.8"
 
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm",     version.ref = "kotlin" }
 
 [libraries]
+
+fastxml-woodstox = { group = "com.fasterxml.woodstox", name = "woodstox-core", version.ref = "fastxml-woodstox" }
 
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
 

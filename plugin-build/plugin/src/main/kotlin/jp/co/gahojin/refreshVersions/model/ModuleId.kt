@@ -11,11 +11,19 @@ import org.gradle.api.artifacts.ModuleIdentifier
 data class ModuleId(
     private val group: String,
     private val name: String,
-) : ModuleIdentifier {
+) : ModuleIdentifier, Comparable<ModuleId> {
     constructor(moduleIdentifier: ModuleIdentifier) : this(
         group = moduleIdentifier.group,
         name = moduleIdentifier.name,
     )
+
+    override fun compareTo(other: ModuleId): Int {
+        var ret = group.compareTo(other.group)
+        if (ret != 0) {
+            ret = name.compareTo(other.name)
+        }
+        return ret
+    }
 
     override fun getGroup() = group
     override fun getName() = name

@@ -29,24 +29,43 @@ class ExtractorDependency {
     private fun extractDependencies(
         configurations: ConfigurationContainer,
         repositories: List<ArtifactRepository>,
-    ): Sequence<DependencyWithRepository> {
-        return configurations
+    ): Sequence<DependencyWithRepository> = sequence {
+        // dependenciesの処理
+        configurations
             .asSequence()
             .flatMap { it.dependencies.asSequence() }
-            .mapNotNull { rawDependency ->
-                // 処理出来ない依存は無視する
-                val dependency = Dependency.from(rawDependency) ?: return@mapNotNull null
-
-                // リポジトリの制約を適用する
-                val filteredRepositories = repositories.filter {
-                    val details = dependency.asArtifactResolutionDetails()
-                    it.contentFilter(details)
-                    details.found
-                }
-                DependencyWithRepository(
-                    dependency = dependency,
-                    repositories = filteredRepositories.mapNotNull { Repository.from(it) },
-                )
+            // 処理出来ない依存は無視する
+            .mapNotNull { Dependency.from(it) }
+            // リポジトリの制約を適用する
+            .resolutionRepositories(repositories)
+            .forEach {
+                yield(it)
             }
+
+        // resolutionStrategyの処理
+        configurations
+            .asSequence()
+            .flatMap { it.resolutionStrategy.forcedModules.asSequence() }
+            .map { Dependency.from(it) }
+            // リポジトリの制約を適用する
+            .resolutionRepositories(repositories)
+            .forEach {
+                yield(it)
+            }
+    }
+
+    private fun Sequence<Dependency>.resolutionRepositories(
+        repositories: List<ArtifactRepository>,
+    ): Sequence<DependencyWithRepository> = sorted().distinct().map { dependency ->
+        // リポジトリの制約を適用する
+        val filteredRepositories = repositories.filter {
+            val details = dependency.asArtifactResolutionDetails()
+            it.contentFilter(details)
+            details.found
+        }
+        DependencyWithRepository(
+            dependency = dependency,
+            repositories = filteredRepositories.mapNotNull { Repository.from(it) },
+        )
     }
 }
