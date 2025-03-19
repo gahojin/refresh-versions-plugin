@@ -6,5 +6,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "refresh-versions-plugin"
-includeBuild("example")
 includeBuild("plugin-build")
