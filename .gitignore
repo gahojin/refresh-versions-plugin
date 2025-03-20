@@ -188,3 +188,7 @@ node_modules/
 
 # Kotlin
 .kotlin/
+
+# Lefthook
+lefthook-local.yml
+
