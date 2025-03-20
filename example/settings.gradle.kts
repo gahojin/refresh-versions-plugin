@@ -7,7 +7,7 @@ pluginManagement {
 
 plugins {
 //    id("jp.co.gahojin.refreshVersions")
-    id("jp.co.gahojin.refreshVersions") version "0.0.1"
+    id("jp.co.gahojin.refreshVersions") version "0.0.2"
 }
 
 dependencyResolutionManagement {
