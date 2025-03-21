@@ -45,7 +45,7 @@ data class TomlLine(
     override fun toString(): String = "TomlLine(section=${section}, key=${key}, value=${value}, attributes=${attributes}\n$text"
 
     companion object {
-        val NEW_LINE = TomlLine(TomlSection.Custom("blank"), "")
+        internal val NEW_LINE = TomlLine(TomlSection.Custom("blank"), "")
 
         private fun String.unquote() = trim().removeSurrounding("\"")
 
@@ -53,12 +53,12 @@ data class TomlLine(
             val splitByColon = value.split(':')
 
             return when (section) {
-                TomlSection.Root, TomlSection.Bundles, TomlSection.Versions -> emptyMap<String, String>()
+                TomlSection.Root, TomlSection.Bundles, TomlSection.Versions -> emptyMap()
                 TomlSection.Plugins -> {
                     if (value.startsWith('{')) {
                         getAttributes(value)
                     } else if (splitByColon.size > 1) {
-                        buildMap<String, String> {
+                        buildMap {
                             put("id", splitByColon[0].trim())
                             put("version", splitByColon[1])
                         }
@@ -77,14 +77,14 @@ data class TomlLine(
                                 attributes.remove("module")
                             } ?: attributes
                         }
-                    } else buildMap<String, String> {
+                    } else buildMap {
                         put("group", splitByColon[0])
                         if (splitByColon.size > 1) put("name", splitByColon[1].trim())
                         if (splitByColon.size > 2) put("version", splitByColon[2])
                     }
                 }
 
-                else -> emptyMap<String, String>()
+                else -> emptyMap()
             }
         }
 

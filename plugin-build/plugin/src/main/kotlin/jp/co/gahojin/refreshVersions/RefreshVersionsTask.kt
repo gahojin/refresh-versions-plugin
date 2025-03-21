@@ -79,6 +79,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
     companion object {
         private const val TASK_NAME = "refreshVersions"
 
+        @JvmStatic
         fun register(project: Project, extensions: RefreshVersionsExtension) {
             project.tasks.register<RefreshVersionsTask>(TASK_NAME) {
                 it.versionsTomlFile.set(extensions.getVersionsTomlFile())

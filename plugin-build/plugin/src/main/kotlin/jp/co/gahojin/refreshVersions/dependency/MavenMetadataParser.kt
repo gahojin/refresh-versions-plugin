@@ -12,6 +12,7 @@ import javax.xml.stream.XMLStreamReader
  * メタデータXMLパーサー.
  */
 object MavenMetadataParser {
+    @JvmStatic
     fun parse(xml: String): List<Version> {
         val factory: XMLInputFactory = XMLInputFactory.newInstance()
         // 外部DTDを読み込まない

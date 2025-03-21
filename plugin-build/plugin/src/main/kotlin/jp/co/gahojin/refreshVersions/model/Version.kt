@@ -217,6 +217,7 @@ internal sealed interface Item : Comparable<Item?> {
         override fun toString() = value.toString()
 
         companion object {
+            @JvmField
             val ZERO = NumberItem(BigInteger.ZERO)
         }
     }
@@ -229,8 +230,7 @@ internal sealed interface Item : Comparable<Item?> {
     ) : Item {
         private val qualifier: String = VersionQualifier.getComparableQualifier(value)
 
-        override val isNull: Boolean
-            get() = value.isEmpty()
+        override val isNull: Boolean = value.isEmpty()
 
         override fun compareTo(other: Item?): Int {
             return other?.let {
@@ -261,10 +261,12 @@ internal sealed interface Item : Comparable<Item?> {
                 "release" to "",
             )
 
+            @JvmStatic
             fun create(value: String): StringItem {
                 return StringItem(aliases.getOrDefault(value, value))
             }
 
+            @JvmStatic
             fun withFollowByDigit(value: String): StringItem {
                 if (value.length == 1) {
                     // a1 = alpha-1, b1 = beta-1, m1 = milestone-1

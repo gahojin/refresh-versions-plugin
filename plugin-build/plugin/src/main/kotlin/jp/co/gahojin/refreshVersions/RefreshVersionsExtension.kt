@@ -32,6 +32,7 @@ abstract class RefreshVersionsExtension {
 
         private const val DEFAULT_CACHE_DURATION = 60
 
+        @JvmStatic
         fun create(settings: Settings): RefreshVersionsExtension {
             return settings.extensions.create<RefreshVersionsExtension>(EXTENSION_NAME)
         }

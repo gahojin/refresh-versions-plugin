@@ -8,7 +8,8 @@ import okhttp3.ResponseBody
 /**
  * HTTP通信エラー.
  */
+@Suppress("MemberVisibilityCanBePrivate", "CanBeParameter")
 class HttpException(
     val statusCode: Int,
     val body: ResponseBody,
-) : RuntimeException()
+) : RuntimeException("status: $statusCode, body: ${body.string()}")

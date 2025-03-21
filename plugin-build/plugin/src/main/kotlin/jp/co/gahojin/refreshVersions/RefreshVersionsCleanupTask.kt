@@ -4,7 +4,6 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.extension.register
-import jp.co.gahojin.refreshVersions.toml.TomlFile
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -37,6 +36,7 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
     companion object {
         private const val TASK_NAME = "refreshVersionsCleanup"
 
+        @JvmStatic
         fun register(project: Project, extensions: RefreshVersionsExtension) {
             project.tasks.register<RefreshVersionsCleanupTask>(TASK_NAME) {
                 it.versionsTomlFile.set(extensions.getVersionsTomlFile())

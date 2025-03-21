@@ -18,6 +18,7 @@ sealed class TomlSection(open val name: String) {
                 .toMutableMap()
         }
 
+        @JvmStatic
         fun from(name: String): TomlSection {
             return sections.getOrPut(name) { Custom(name) }
         }

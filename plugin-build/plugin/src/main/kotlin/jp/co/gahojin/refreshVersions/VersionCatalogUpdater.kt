@@ -73,7 +73,7 @@ internal object VersionCatalogUpdater {
             // ^^^^^^^^^ <-この箇所を生成する
             append("##")
             append(" ".repeat((versionPos - 5).coerceAtLeast(0)))
-            append("^ ")
+            append("${Constants.VERSION_SYMBOL} ")
         }
         // バージョン番号より後の文字列を生成する
         val postfix = line.text.substring((versionPos + line.version.length + 1).coerceAtMost(line.text.length))

@@ -24,6 +24,7 @@ enum class VersionQualifier(
         val releaseOrder = RELEASE.order.toString()
         private val maxOrder = entries.maxOf { it.order } + 1
 
+        @JvmStatic
         fun getComparableQualifier(value: String): String {
             val key = value.lowercase()
             return cache.getOrElse(key) {

@@ -8,6 +8,10 @@ import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 
+/**
+ * プラグインエンドポイント.
+ */
+@Suppress("unused")
 abstract class CorePlugin : Plugin<Any> {
     override fun apply(target: Any) {
         // settings.gradle(.kts)以外では使用不可とする

@@ -14,7 +14,6 @@ import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
-import java.io.File
 import java.net.URI
 import kotlin.time.Duration
 
@@ -33,6 +32,7 @@ interface Repository {
     ): DependencyVersionsFetcher
 
     companion object {
+        @JvmStatic
         fun from(repository: ArtifactRepository): Repository? {
             return when (repository) {
                 is MavenArtifactRepository -> Maven(repository)
@@ -100,11 +100,9 @@ interface Repository {
 
     class FlatDirectory(
         override val name: String,
-        val dirs: Set<File>,
     ) : Repository {
         constructor(repository: FlatDirectoryArtifactRepository) : this(
             name = repository.name,
-            dirs = repository.dirs,
         )
 
         override fun createFetcher(

@@ -4,7 +4,6 @@
 package jp.co.gahojin.refreshVersions.model
 
 import org.gradle.api.artifacts.ExternalDependency
-import org.gradle.api.artifacts.ModuleIdentifier
 import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.plugin.use.PluginDependency
@@ -15,7 +14,6 @@ import org.gradle.plugin.use.PluginDependency
 sealed interface Dependency : Comparable<Dependency> {
     val moduleId: ModuleId
     val version: String
-    val versionConstraint: VersionConstraint?
 
     override fun compareTo(other: Dependency): Int {
         var ret = moduleId.compareTo(other.moduleId)
@@ -33,6 +31,7 @@ sealed interface Dependency : Comparable<Dependency> {
     }
 
     companion object {
+        @JvmStatic
         fun from(dependency: org.gradle.api.artifacts.Dependency): Dependency? {
             // バージョンが未定義の場合、処理対象外
             if (dependency.version == null) {
@@ -46,10 +45,12 @@ sealed interface Dependency : Comparable<Dependency> {
             }
         }
 
+        @JvmStatic
         fun from(dependency: PluginDependency): Dependency {
             return Plugin(dependency)
         }
 
+        @JvmStatic
         fun from(dependency: ModuleVersionSelector): Dependency {
             return ForceModule(dependency)
         }
@@ -59,8 +60,6 @@ sealed interface Dependency : Comparable<Dependency> {
         override val moduleId: ModuleId,
         override val version: String,
     ) : Dependency {
-        override val versionConstraint = null
-
         constructor(dependency: org.gradle.api.artifacts.Dependency) : this(
             moduleId = ModuleId(
                 group = dependency.group.orEmpty(),
@@ -73,12 +72,10 @@ sealed interface Dependency : Comparable<Dependency> {
     data class External(
         override val moduleId: ModuleId,
         override val version: String,
-        override val versionConstraint: VersionConstraint?,
     ) : Dependency {
         constructor(dependency: ExternalDependency) : this(
             moduleId = ModuleId(dependency.module),
             version = dependency.version.orEmpty(),
-            versionConstraint = VersionConstraint(dependency.versionConstraint),
         )
     }
 
@@ -86,7 +83,6 @@ sealed interface Dependency : Comparable<Dependency> {
         val pluginId: String,
         override val moduleId: ModuleId,
         override val version: String,
-        override val versionConstraint: VersionConstraint?,
     ) : Dependency {
         constructor(dependency: PluginDependency) : this(
             pluginId = dependency.pluginId,
@@ -95,7 +91,6 @@ sealed interface Dependency : Comparable<Dependency> {
                 name = "${dependency.pluginId}.gradle.plugin",
             ),
             version = dependency.version.requiredVersion,
-            versionConstraint = VersionConstraint(dependency.version),
         )
     }
 
@@ -103,8 +98,6 @@ sealed interface Dependency : Comparable<Dependency> {
         override val moduleId: ModuleId,
         override val version: String,
     ) : Dependency {
-        override val versionConstraint = null
-
         constructor(moduleSelector: ModuleVersionSelector) : this(
             moduleId = ModuleId(
                 group = moduleSelector.group,

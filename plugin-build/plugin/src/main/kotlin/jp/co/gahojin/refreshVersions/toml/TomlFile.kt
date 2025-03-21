@@ -89,6 +89,7 @@ data class TomlFile(
     private fun sortedSections() = (Constants.orderTomlSections + sections.keys).toSet()
 
     companion object {
+        @JvmStatic
         fun parseToml(reader: Reader): TomlFile {
             val result = linkedMapOf<TomlSection, List<TomlLine>>()
             var section: TomlSection = TomlSection.Root
