@@ -15,7 +15,7 @@ plugins {
 
 ## Usage
 
-Currently, Gradle 8.8 or later is supported.
+Currently, Gradle 8.0 or later is supported.
 
 ### Find available updates in versions catalog
 

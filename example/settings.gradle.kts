@@ -13,11 +13,12 @@ plugins {
 dependencyResolutionManagement {
     repositories {
         google {
-            content {
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-                includeGroupAndSubgroups("androidx")
-            }
+// can be used with gradle 8.1 or later
+//            content {
+//                includeGroupAndSubgroups("com.android")
+//                includeGroupAndSubgroups("com.google")
+//                includeGroupAndSubgroups("androidx")
+//            }
         }
         mavenCentral()
         mavenLocal()
@@ -29,7 +30,13 @@ dependencyResolutionManagement {
     }
 }
 
-refreshVersions {
+configure<jp.co.gahojin.refreshVersions.RefreshVersionsExtension> {
     cacheDurationMinutes = 120
     versionsTomlFile = file("gradle/custom.versions.toml")
 }
+
+// For gradle 8.8 or later
+//refreshVersions {
+//    cacheDurationMinutes = 120
+//    versionsTomlFile = file("gradle/custom.versions.toml")
+//}

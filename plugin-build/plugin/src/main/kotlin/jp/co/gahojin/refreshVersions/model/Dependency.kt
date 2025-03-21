@@ -55,8 +55,7 @@ sealed interface Dependency : Comparable<Dependency> {
         }
     }
 
-    @ConsistentCopyVisibility
-    data class General private constructor(
+    data class General(
         override val moduleId: ModuleId,
         override val version: String,
     ) : Dependency {
@@ -71,8 +70,7 @@ sealed interface Dependency : Comparable<Dependency> {
         )
     }
 
-    @ConsistentCopyVisibility
-    data class External private constructor(
+    data class External(
         override val moduleId: ModuleId,
         override val version: String,
         override val versionConstraint: VersionConstraint?,
@@ -84,8 +82,7 @@ sealed interface Dependency : Comparable<Dependency> {
         )
     }
 
-    @ConsistentCopyVisibility
-    data class Plugin private constructor(
+    data class Plugin(
         val pluginId: String,
         override val moduleId: ModuleId,
         override val version: String,
@@ -102,8 +99,7 @@ sealed interface Dependency : Comparable<Dependency> {
         )
     }
 
-    @ConsistentCopyVisibility
-    data class ForceModule private constructor(
+    data class ForceModule(
         override val moduleId: ModuleId,
         override val version: String,
     ) : Dependency {

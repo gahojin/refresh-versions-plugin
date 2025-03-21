@@ -43,8 +43,7 @@ interface Repository {
         }
     }
 
-    @ConsistentCopyVisibility
-    data class Maven private constructor(
+    class Maven(
         override val name: String,
         val url: URI,
         val credentials: PasswordCredentials?,
@@ -79,8 +78,7 @@ interface Repository {
         }
     }
 
-    @ConsistentCopyVisibility
-    data class Ivy private constructor(
+    class Ivy(
         override val name: String,
         val url: URI,
         val credentials: PasswordCredentials?,
@@ -100,8 +98,7 @@ interface Repository {
         }
     }
 
-    @ConsistentCopyVisibility
-    data class FlatDirectory private constructor(
+    class FlatDirectory(
         override val name: String,
         val dirs: Set<File>,
     ) : Repository {
