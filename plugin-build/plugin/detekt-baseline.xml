@@ -5,7 +5,7 @@
     <ID>CyclomaticComplexMethod:Version.kt$Item.ListItem$override fun compareTo(other: Item?): Int</ID>
     <ID>CyclomaticComplexMethod:Version.kt$Version.Companion$private fun parseVersion(version: String): ListItem</ID>
     <ID>LongMethod:Version.kt$Version.Companion$private fun parseVersion(version: String): ListItem</ID>
-    <ID>NestedBlockDepth:MavenMetadataParser.kt$MavenMetadataParser$fun parse(xml: String): List&lt;Version></ID>
+    <ID>NestedBlockDepth:MavenMetadataParser.kt$MavenMetadataParser$@JvmStatic fun parse(xml: String): List&lt;Version></ID>
     <ID>NestedBlockDepth:Version.kt$Item.ListItem$fun normalize()</ID>
     <ID>NestedBlockDepth:Version.kt$Item.ListItem$override fun compareTo(other: Item?): Int</ID>
     <ID>NestedBlockDepth:Version.kt$Version.Companion$private fun parseVersion(version: String): ListItem</ID>
