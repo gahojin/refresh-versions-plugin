@@ -5,8 +5,6 @@ package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.extension.globalRepositories
 import okhttp3.Cache
-import okio.FileSystem
-import okio.Path.Companion.toOkioPath
 import org.gradle.api.Task
 import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.initialization.Settings
@@ -31,6 +29,6 @@ object ConfigHolder {
     }
 
     internal fun initialize(task: Task) {
-        this.cache = Cache(FileSystem.SYSTEM, task.temporaryDir.toOkioPath(), CACHE_MAX_SIZE)
+        this.cache = Cache(task.temporaryDir, CACHE_MAX_SIZE)
     }
 }

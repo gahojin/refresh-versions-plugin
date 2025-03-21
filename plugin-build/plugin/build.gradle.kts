@@ -27,7 +27,6 @@ dependencies {
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.coroutines)
     implementation(libs.okhttp.logging.interceptor)
-    implementation(libs.okio)
 
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutines.test)
