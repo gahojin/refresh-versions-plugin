@@ -43,7 +43,7 @@ interface Repository {
         }
     }
 
-    class Maven(
+    data class Maven internal constructor(
         override val name: String,
         val url: URI,
         val credentials: PasswordCredentials?,
@@ -78,7 +78,7 @@ interface Repository {
         }
     }
 
-    class Ivy(
+    data class Ivy internal constructor(
         override val name: String,
         val url: URI,
         val credentials: PasswordCredentials?,
@@ -98,7 +98,7 @@ interface Repository {
         }
     }
 
-    class FlatDirectory(
+    data class FlatDirectory internal constructor(
         override val name: String,
     ) : Repository {
         constructor(repository: FlatDirectoryArtifactRepository) : this(

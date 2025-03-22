@@ -15,21 +15,22 @@ import org.gradle.api.artifacts.repositories.ArtifactRepository
 
 class ExtractorDependency {
     fun extract(rootProject: Project): List<DependencyWithRepository> {
-        val allDependencies = mutableListOf<DependencyWithRepository>()
+        val allDependencies = mutableMapOf<Dependency, MutableSet<Repository>>()
         rootProject.allprojects {
-            var dependencies = extractDependencies(it.configurations, it.repositoriesWithGlobal)
-            allDependencies.addAll(dependencies)
-
-            dependencies = extractDependencies(it.buildscript.configurations, it.repositoriesWithPlugin)
-            allDependencies.addAll(dependencies)
+            extractDependencies(allDependencies, it.configurations, it.repositoriesWithGlobal + it.repositoriesWithPlugin)
+            extractDependencies(allDependencies, it.buildscript.configurations, it.repositoriesWithPlugin)
         }
-        return allDependencies
+
+        return allDependencies.entries.map { (dependency, repositories) ->
+            DependencyWithRepository(dependency, repositories.toList())
+        }
     }
 
     private fun extractDependencies(
+        destination: MutableMap<Dependency, MutableSet<Repository>>,
         configurations: ConfigurationContainer,
         repositories: List<ArtifactRepository>,
-    ): Sequence<DependencyWithRepository> = sequence {
+    ) {
         // dependenciesの処理
         configurations
             .asSequence()
@@ -37,10 +38,7 @@ class ExtractorDependency {
             // 処理出来ない依存は無視する
             .mapNotNull { Dependency.from(it) }
             // リポジトリの制約を適用する
-            .resolutionRepositories(repositories)
-            .forEach {
-                yield(it)
-            }
+            .resolutionRepositories(destination, repositories)
 
         // resolutionStrategyの処理
         configurations
@@ -48,24 +46,25 @@ class ExtractorDependency {
             .flatMap { it.resolutionStrategy.forcedModules.asSequence() }
             .map { Dependency.from(it) }
             // リポジトリの制約を適用する
-            .resolutionRepositories(repositories)
-            .forEach {
-                yield(it)
-            }
+            .resolutionRepositories(destination, repositories)
     }
 
     private fun Sequence<Dependency>.resolutionRepositories(
+        destination: MutableMap<Dependency, MutableSet<Repository>>,
         repositories: List<ArtifactRepository>,
-    ): Sequence<DependencyWithRepository> = sorted().distinct().map { dependency ->
-        // リポジトリの制約を適用する
-        val filteredRepositories = repositories.filter {
-            val details = dependency.asArtifactResolutionDetails()
-            it.contentFilter(details)
-            details.found
+    ) {
+        map { dependency ->
+            // リポジトリの制約を適用する
+            val filteredRepositories = repositories.filter {
+                val details = dependency.asArtifactResolutionDetails()
+                it.contentFilter(details)
+                details.found
+            }
+            dependency to filteredRepositories.mapNotNull { Repository.from(it) }
+        }.forEach { (dependency, repositories) ->
+            destination.getOrPut(dependency) {
+                mutableSetOf()
+            }.addAll(repositories)
         }
-        DependencyWithRepository(
-            dependency = dependency,
-            repositories = filteredRepositories.mapNotNull { Repository.from(it) },
-        )
     }
 }
