@@ -85,6 +85,7 @@ tasks.withType<Test>().configureEach {
         showStandardStreams = true
         events("passed", "skipped", "failed")
     }
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 signing {

@@ -12,11 +12,6 @@ data class ModuleId(
     private val group: String,
     private val name: String,
 ) : ModuleIdentifier, Comparable<ModuleId> {
-    constructor(moduleIdentifier: ModuleIdentifier) : this(
-        group = moduleIdentifier.group,
-        name = moduleIdentifier.name,
-    )
-
     override fun compareTo(other: ModuleId): Int {
         var ret = group.compareTo(other.group)
         if (ret != 0) {

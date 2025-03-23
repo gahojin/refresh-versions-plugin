@@ -6,6 +6,7 @@ package jp.co.gahojin.refreshVersions
 import jp.co.gahojin.refreshVersions.dependency.ExtractorDependency
 import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
 import jp.co.gahojin.refreshVersions.extension.register
+import jp.co.gahojin.refreshVersions.model.withDependencies
 import jp.co.gahojin.refreshVersions.toml.TomlFile
 import jp.co.gahojin.refreshVersions.toml.TomlSection
 import kotlinx.coroutines.runBlocking

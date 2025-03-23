@@ -6,6 +6,7 @@ package jp.co.gahojin.refreshVersions.toml
 import jp.co.gahojin.refreshVersions.model.ModuleId
 import org.gradle.api.artifacts.ModuleIdentifier
 
+@Suppress("MemberVisibilityCanBePrivate")
 data class TomlLine(
     val section: TomlSection,
     val text: String,
