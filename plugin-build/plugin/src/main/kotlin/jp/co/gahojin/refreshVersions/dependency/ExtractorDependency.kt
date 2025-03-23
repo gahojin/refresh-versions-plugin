@@ -44,7 +44,7 @@ class ExtractorDependency {
         configurations
             .asSequence()
             .flatMap { it.resolutionStrategy.forcedModules.asSequence() }
-            .map { Dependency.from(it) }
+            .mapNotNull { Dependency.from(it) }
             // リポジトリの制約を適用する
             .resolutionRepositories(destination, repositories)
     }
