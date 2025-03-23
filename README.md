@@ -9,7 +9,7 @@
 ```groovy
 // settings.gradle(.kts)
 plugins {
-    id("jp.co.gahojin.refreshVersions") version "0.0.3"
+    id("jp.co.gahojin.refreshVersions") version "0.0.4"
 }
 ```
 
