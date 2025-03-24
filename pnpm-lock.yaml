@@ -15,7 +15,7 @@ importers:
         specifier: 19.8.0
         version: 19.8.0
       lefthook:
-        specifier: ^1.11.3
+        specifier: 1.11.3
         version: 1.11.3
       npm-check-updates:
         specifier: 17.1.15
