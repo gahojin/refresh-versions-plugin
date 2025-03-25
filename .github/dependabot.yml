@@ -27,6 +27,7 @@ updates:
     # 古いGradleをサポートするため、kotlin関連のアップデートを行わない
     ignore:
       - dependency-name: "org.jetbrains.kotlin.*"
+      - dependency-name: "org.jetbrains.kotlin:kotlin-*"
       - dependency-name: "org.jetbrains.kotlinx:kotlinx-coroutines-*"
     schedule:
       interval: "weekly"
