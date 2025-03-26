@@ -8,7 +8,6 @@ import jp.co.gahojin.refreshVersions.dependency.FlatDirDependencyVersionsFetcher
 import jp.co.gahojin.refreshVersions.dependency.IvyDependencyVersionsFetcher
 import jp.co.gahojin.refreshVersions.dependency.MavenDependencyVersionsFetcher
 import jp.co.gahojin.refreshVersions.extension.passwordCredentials
-import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository
@@ -43,10 +42,10 @@ interface Repository {
         }
     }
 
-    data class Maven internal constructor(
+    private data class Maven(
         override val name: String,
         val url: URI,
-        val credentials: PasswordCredentials?,
+        val credentials: Credentials?,
     ) : Repository {
         constructor(repository: MavenArtifactRepository) : this(
             name = repository.name,
@@ -64,9 +63,7 @@ interface Repository {
                     client = client,
                     repositoryUrl = url.toString(),
                     moduleId = library.moduleId,
-                    authorization = credentials?.let {
-                        Credentials.basic(it.username, it.password)
-                    },
+                    authorization = credentials?.asAuthorization(),
                     cacheDuration = cacheDuration,
                 )
                 "file" -> MavenDependencyVersionsFetcher.ForFile(
@@ -78,10 +75,10 @@ interface Repository {
         }
     }
 
-    data class Ivy internal constructor(
+    private data class Ivy(
         override val name: String,
         val url: URI,
-        val credentials: PasswordCredentials?,
+        val credentials: Credentials?,
     ) : Repository {
         constructor(repository: IvyArtifactRepository) : this(
             name = repository.name,
@@ -98,7 +95,7 @@ interface Repository {
         }
     }
 
-    data class FlatDirectory internal constructor(
+    private data class FlatDirectory(
         override val name: String,
     ) : Repository {
         constructor(repository: FlatDirectoryArtifactRepository) : this(

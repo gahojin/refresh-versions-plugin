@@ -60,7 +60,7 @@ sealed interface Dependency : Comparable<Dependency> {
         }
     }
 
-    data class Module internal constructor(
+    private data class Module(
         val group: String,
         val name: String,
         override val version: String,
@@ -83,7 +83,7 @@ sealed interface Dependency : Comparable<Dependency> {
         )
     }
 
-    data class Plugin internal constructor(
+    private data class Plugin(
         val pluginId: String,
         override val version: String,
     ) : Dependency {

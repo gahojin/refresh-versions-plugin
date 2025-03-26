@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.minutes
 /**
  * バージョン候補を調べる.
  */
-internal class LookupVersionsCandidates(
+class LookupVersionsCandidates(
     private val cacheDurationMinutes: Int,
     logger: Logger,
     logLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BASIC,
