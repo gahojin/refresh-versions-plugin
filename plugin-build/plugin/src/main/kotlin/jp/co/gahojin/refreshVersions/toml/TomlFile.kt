@@ -5,8 +5,6 @@ package jp.co.gahojin.refreshVersions.toml
 
 import jp.co.gahojin.refreshVersions.Constants
 import java.io.Reader
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 data class TomlFile(
     val sections: MutableMap<TomlSection, List<TomlLine>>,

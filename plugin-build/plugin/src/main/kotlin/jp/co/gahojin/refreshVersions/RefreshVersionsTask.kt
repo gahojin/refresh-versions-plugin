@@ -48,18 +48,13 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
         // バージョンカタログに定義されている情報を取得
         val versionCatalog = versionCatalog ?: run {
-            logger.lifecycle("versionsCatalog disabled.")
+            logger.warn("versionsCatalog disabled.")
             return
         }
 
         // TOMLファイルに定義されている情報を取得
-        val file = requireNotNull(versionsTomlFile.orNull)
-        val toml = if (file.exists()) {
-            TomlFile.parseToml(file.bufferedReader())
-        } else {
-            logger.lifecycle("versionsCatalog file not found.")
-            return
-        }
+        val file = versionsTomlFile.get()
+        val toml = TomlFile.parseToml(file.bufferedReader())
 
         // configuration構文で定義した依存を抽出
         runBlocking {
@@ -68,7 +63,10 @@ abstract class RefreshVersionsTask : DefaultTask() {
             val pluginDependencies = versionCatalog.plugins().withDependencies(dependencies)
 
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
-            val lookupVersionsCandidates = LookupVersionsCandidates(cacheDurationMinutes.get(), logger)
+            val lookupVersionsCandidates = LookupVersionsCandidates(
+                cacheDurationMinutes = cacheDurationMinutes.get(),
+                logger = logger,
+            )
             val libraryUpdatableDependencies = lookupVersionsCandidates.execute(libraryDependencies)
             val pluginUpdatableDependencies = lookupVersionsCandidates.execute(pluginDependencies)
 

@@ -24,7 +24,7 @@ internal class LookupVersionsCandidates(
     private val context: CoroutineContext = Dispatchers.IO,
 ) {
     private val loggingInterceptor = HttpLoggingInterceptor {
-        logger.lifecycle(it)
+        logger.info(it)
     }.setLevel(logLevel)
 
     suspend fun execute(dependencies: List<DependencyWithRepository>): List<UpdatableDependency> {
