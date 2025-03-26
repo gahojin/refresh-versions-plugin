@@ -4,6 +4,7 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.extension.register
+import jp.co.gahojin.refreshVersions.internal.VersionCatalogCleaner
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.Property

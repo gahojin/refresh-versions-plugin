@@ -1,4 +1,7 @@
-package jp.co.gahojin.refreshVersions
+/*
+ * (C) 2025 GAHOJIN, Inc.
+ */
+package jp.co.gahojin.refreshVersions.internal
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
