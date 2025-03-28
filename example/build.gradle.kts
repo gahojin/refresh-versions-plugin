@@ -11,6 +11,8 @@ dependencies {
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.0")
     implementation(libs.zero.allocation.hashing)
 
+    dokkaPlugin(libs.dokka.mathjax.plugin)
+
     testImplementation(platform(libs.kotest.bom))
     testImplementation("io.mockk:mockk:1.13.16")
     testImplementation(libs.truth)

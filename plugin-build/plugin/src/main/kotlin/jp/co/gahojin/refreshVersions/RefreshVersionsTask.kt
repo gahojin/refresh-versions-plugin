@@ -88,8 +88,11 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
             // バージョンカタログファイルを更新
             toml.removeComments()
-            VersionCatalogUpdater.execute(toml, TomlSection.Libraries, libraryUpdatableDependencies)
-            VersionCatalogUpdater.execute(toml, TomlSection.Plugins, pluginUpdatableDependencies)
+            VersionCatalogUpdater.execute(
+                toml = toml,
+                libraryDependencies = libraryUpdatableDependencies,
+                pluginDependencies = pluginUpdatableDependencies,
+            )
             file.writeText(toml.format(sortSection.getOrElse(false)))
 
             // settings.gradle(.kts)ファイルを更新

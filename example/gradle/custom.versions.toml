@@ -5,7 +5,11 @@
 # 参照のないバージョン定義
 detekt = "1.22.0"
 
-dokka = "2.0.0"
+dokka = "1.9.0"
+##    ^ "1.9.10"
+##    ^ "1.9.20"
+##    ^ "2.0.0-Beta"
+##    ^ "2.0.0"
 
 # resolutionStrategyで参照されている
 fastxml-woodstox = "7.0.0"
@@ -37,6 +41,8 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm",     version.ref = "kotlin" }
 
 [libraries]
+
+dokka-mathjax-plugin = { group = "org.jetbrains.dokka", name = "mathjax-plugin", version.ref = "dokka" }
 
 fastxml-woodstox = { group = "com.fasterxml.woodstox", name = "woodstox-core", version.ref = "fastxml-woodstox" }
 
