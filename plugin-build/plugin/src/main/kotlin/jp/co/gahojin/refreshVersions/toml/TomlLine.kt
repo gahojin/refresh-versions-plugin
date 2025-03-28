@@ -7,8 +7,7 @@ import jp.co.gahojin.refreshVersions.Constants.PLUGIN_NAME_SUFFIX
 import jp.co.gahojin.refreshVersions.model.ModuleId
 import org.gradle.api.artifacts.ModuleIdentifier
 
-@Suppress("MemberVisibilityCanBePrivate")
-data class TomlLine(
+class TomlLine(
     val section: TomlSection,
     val text: String,
 ) {
@@ -99,4 +98,14 @@ data class TomlLine(
                 }.toMutableMap()
         }
     }
+}
+
+fun List<TomlLine>.format(): String {
+    var isPreviousNotBlank = false
+    return filter {
+        val current = it.text.isNotBlank()
+        val result = isPreviousNotBlank || current
+        isPreviousNotBlank = current
+        return@filter result
+    }.joinToString(prefix = "\n", separator = "\n", postfix = "\n") { it.text }.trim()
 }

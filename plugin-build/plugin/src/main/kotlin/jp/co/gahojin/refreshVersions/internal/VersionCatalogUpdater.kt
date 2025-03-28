@@ -12,49 +12,70 @@ import jp.co.gahojin.refreshVersions.toml.TomlSection
 internal object VersionCatalogUpdater {
     fun execute(
         toml: TomlFile,
+        libraryDependencies: List<UpdatableDependency>,
+        pluginDependencies: List<UpdatableDependency>,
+    ) {
+        val versionRefMappings = mutableMapOf<String, UpdatableDependency>()
+        execute(toml, TomlSection.Libraries, libraryDependencies) { versionRef, dependency ->
+            versionRefMappings.putIfAbsent(versionRef, dependency)
+        }
+        execute(toml, TomlSection.Plugins, pluginDependencies) { versionRef, dependency ->
+            versionRefMappings.putIfAbsent(versionRef, dependency)
+        }
+        executeVersionRef(toml, versionRefMappings)
+    }
+
+    fun execute(
+        toml: TomlFile,
         section: TomlSection,
         dependencies: List<UpdatableDependency>,
+        onDetectVersionRef: (versionRef: String, UpdatableDependency) -> Unit,
     ) {
-        // バージョン
-        val versions = toml[TomlSection.Versions]
         // 対象依存
         val targetDependencies = toml[section]
-        // 対象依存からバージョン参照
-        val versionRefs = targetDependencies.filter {
-            it.versionRef.isNotEmpty()
-        }.groupBy { it.versionRef }
 
-        toml[TomlSection.Versions] = versions.flatMap { initialLine -> sequence {
+        toml[section] = targetDependencies.flatMap { initialLine -> sequence {
             // 現在の行を出力
             yield(initialLine)
 
-            // 空行やバージョン未定義の場合、何もしない
+            // 空行の場合、何もしない
             if (initialLine.isEmptyLine) {
                 return@sequence
             }
 
             // 一致する依存情報を抽出し、アップデート可能なバージョン一覧を取得する
-            val updatableDependency = versionRefs[initialLine.key]?.firstNotNullOfOrNull { line ->
-                dependencies.firstOrNull {
-                    it.dependency.moduleId == line.moduleId
-                }
-            }
+            val updatableDependency = dependencies.firstOrNull {
+                it.dependency.moduleId == initialLine.moduleId
+            } ?: return@sequence
 
-            // 行追加
-            updateLines(initialLine, updatableDependency)
+            val versionRef = initialLine.versionRef
+            if (versionRef.isNotEmpty()) {
+                onDetectVersionRef(versionRef, updatableDependency)
+            } else {
+                // 行追加
+                updateLines(initialLine, updatableDependency)
+            }
         } }
-        toml[section] = targetDependencies.flatMap { initialLine -> sequence {
+    }
+
+    fun executeVersionRef(
+        toml: TomlFile,
+        versionRefMappings: Map<String, UpdatableDependency>,
+    ) {
+        // バージョン
+        val versions = toml[TomlSection.Versions]
+
+        toml[TomlSection.Versions] = versions.flatMap { initialLine -> sequence {
             // 現在の行を出力
             yield(initialLine)
 
-            // 空行やバージョン参照の場合、何もしない
-            if (initialLine.isEmptyLine || initialLine.versionRef.isNotEmpty()) {
+            // 空行の場合、何もしない
+            if (initialLine.isEmptyLine) {
                 return@sequence
             }
 
             // 一致する依存情報を抽出し、アップデート可能なバージョン一覧を取得する
-            val updatableDependency = dependencies
-                .firstOrNull { it.dependency.moduleId == initialLine.moduleId }
+            val updatableDependency = versionRefMappings[initialLine.key] ?: return@sequence
 
             // 行追加
             updateLines(initialLine, updatableDependency)
@@ -63,10 +84,8 @@ internal object VersionCatalogUpdater {
 
     private suspend fun SequenceScope<TomlLine>.updateLines(
         line: TomlLine,
-        updatableDependency: UpdatableDependency?,
+        updatableDependency: UpdatableDependency,
     ) {
-        updatableDependency ?: return
-
         // バージョン番号より前の文字列を生成する
         val versionPos = line.text.indexOf(line.version)
         val prefix = buildString {
