@@ -3,13 +3,16 @@
  */
 package jp.co.gahojin.refreshVersions
 
+import jp.co.gahojin.refreshVersions.extension.getSettingsFile
 import jp.co.gahojin.refreshVersions.extension.register
+import jp.co.gahojin.refreshVersions.internal.SettingsCleaner
 import jp.co.gahojin.refreshVersions.internal.VersionCatalogCleaner
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
@@ -24,6 +27,14 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
     @get:Internal
     abstract val sortSection: Property<Boolean>
 
+    @get:InputFile
+    @get:Optional
+    abstract val rootSettingsFile: Property<File>
+
+    @get:InputFile
+    @get:Optional
+    abstract val buildSrcSettingsFile: Property<File>
+
     @TaskAction
     fun cleanUp() {
         val file = versionsTomlFile.get()
@@ -31,6 +42,11 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
             VersionCatalogCleaner.execute(reader, sortSection.getOrElse(false))
         }
         file.writeText(content)
+
+        // settings.gradle(.kts)ファイルを更新
+        SettingsCleaner.execute(
+            files = listOf(rootSettingsFile, buildSrcSettingsFile),
+        )
     }
 
     companion object {
@@ -41,6 +57,8 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
             project.tasks.register<RefreshVersionsCleanupTask>(TASK_NAME) {
                 it.versionsTomlFile.set(extensions.getVersionsTomlFile())
                 it.sortSection.set(extensions.sortSection)
+                it.rootSettingsFile.set(project.getSettingsFile())
+                it.buildSrcSettingsFile.set(project.getSettingsFile("buildSrc/"))
             }
         }
     }

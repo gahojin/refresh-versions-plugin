@@ -3,6 +3,7 @@
  */
 package jp.co.gahojin.refreshVersions.toml
 
+import jp.co.gahojin.refreshVersions.Constants.PLUGIN_NAME_SUFFIX
 import jp.co.gahojin.refreshVersions.model.ModuleId
 import org.gradle.api.artifacts.ModuleIdentifier
 
@@ -28,7 +29,7 @@ data class TomlLine(
     }
 
     val name: String by lazy {
-        if (section == TomlSection.Plugins) "$id.gradle.plugin" else attributes.getOrDefault("name", "")
+        if (section == TomlSection.Plugins) "$id${PLUGIN_NAME_SUFFIX}" else attributes.getOrDefault("name", "")
     }
 
     val version: String by lazy {

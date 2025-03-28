@@ -3,6 +3,7 @@
  */
 package jp.co.gahojin.refreshVersions.model
 
+import jp.co.gahojin.refreshVersions.Constants.PLUGIN_NAME_SUFFIX
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.api.artifacts.ProjectDependency
@@ -58,6 +59,17 @@ sealed interface Dependency : Comparable<Dependency> {
         fun from(dependency: MinimalExternalModuleDependency): Dependency {
             return Module(dependency as ModuleVersionSelector)
         }
+
+        internal fun module(
+            group: String,
+            name: String,
+            version: String,
+        ): Dependency = Module(group, name, version)
+
+        internal fun plugin(
+            pluginId: String,
+            version: String,
+        ): Dependency = Plugin(pluginId, version)
     }
 
     private data class Module(
@@ -89,7 +101,7 @@ sealed interface Dependency : Comparable<Dependency> {
     ) : Dependency {
         override val moduleId = ModuleId(
             group = pluginId,
-            name = "${pluginId}.gradle.plugin",
+            name = "${pluginId}${PLUGIN_NAME_SUFFIX}",
         )
 
         constructor(dependency: PluginDependency) : this(
