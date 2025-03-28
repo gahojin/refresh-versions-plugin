@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.repositories.ArtifactRepository
+import java.io.File
 
 val Project.defaultVersionCatalog: VersionCatalog?
     get() {
@@ -37,3 +38,10 @@ val Project.repositoriesWithPlugin: List<ArtifactRepository>
         }
         return repositories
     }
+
+
+fun Project.getSettingsFile(prefix: String = ""): File? {
+    return file("${prefix}settings.gradle.kts").takeIf { it.exists() } ?: run {
+        file("${prefix}settings.gradle").takeIf { it.exists() }
+    }
+}

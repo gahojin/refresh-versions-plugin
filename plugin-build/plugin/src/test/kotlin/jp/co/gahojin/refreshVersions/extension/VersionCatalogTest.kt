@@ -1,7 +1,7 @@
 /*
  * (C) 2025 GAHOJIN, Inc.
  */
-package jp.co.gahojin.refreshVersions
+package jp.co.gahojin.refreshVersions.extension
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -11,8 +11,7 @@ import io.mockk.slot
 import jp.co.gahojin.refreshVersions.model.Dependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.testfixtures.ProjectBuilder
-import java.util.*
-
+import java.util.Optional
 
 class VersionCatalogTest : StringSpec({
     "plugins" {
@@ -46,8 +45,8 @@ class VersionCatalogTest : StringSpec({
         }
 
         sut.plugins() shouldBe setOf(
-            Dependency.Plugin("plugin.name", version = "0.0.1"),
-            Dependency.Plugin("plugin.name2", version = "0.1.0"),
+            Dependency.plugin("plugin.name", version = "0.0.1"),
+            Dependency.plugin("plugin.name2", version = "0.1.0"),
         )
     }
 
@@ -81,8 +80,8 @@ class VersionCatalogTest : StringSpec({
         }
 
         sut.libraries() shouldBe setOf(
-            Dependency.Module("group", "name", version = "0.0.1"),
-            Dependency.Module("group", "name2", version = "0.1.0"),
+            Dependency.module("group", "name", version = "0.0.1"),
+            Dependency.module("group", "name2", version = "0.1.0"),
         )
     }
 })

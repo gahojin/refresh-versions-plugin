@@ -1,7 +1,7 @@
 /*
  * (C) 2025 GAHOJIN, Inc.
  */
-package jp.co.gahojin.refreshVersions
+package jp.co.gahojin.refreshVersions.internal
 
 import jp.co.gahojin.refreshVersions.toml.TomlFile
 import java.io.Reader

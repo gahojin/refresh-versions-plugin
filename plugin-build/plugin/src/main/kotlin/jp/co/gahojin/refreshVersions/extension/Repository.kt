@@ -3,6 +3,7 @@
  */
 package jp.co.gahojin.refreshVersions.extension
 
+import jp.co.gahojin.refreshVersions.model.Credentials
 import jp.co.gahojin.refreshVersions.model.PasswordCredentials
 import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository
@@ -16,7 +17,7 @@ fun ArtifactRepository.contentFilter(details: ArtifactResolutionDetails) = runCa
     }
 }
 
-val MavenArtifactRepository.passwordCredentials: PasswordCredentials?
+val MavenArtifactRepository.passwordCredentials: Credentials?
     get() = runCatching {
         when (url.scheme) {
             "http", "https" -> credentials.passwordCredentials
@@ -24,7 +25,7 @@ val MavenArtifactRepository.passwordCredentials: PasswordCredentials?
         }
     }.getOrNull()
 
-val IvyArtifactRepository.passwordCredentials: PasswordCredentials?
+val IvyArtifactRepository.passwordCredentials: Credentials?
     get() = runCatching {
         when (url.scheme) {
             "http", "https" -> credentials.passwordCredentials
@@ -32,7 +33,7 @@ val IvyArtifactRepository.passwordCredentials: PasswordCredentials?
         }
     }.getOrNull()
 
-private val org.gradle.api.artifacts.repositories.PasswordCredentials.passwordCredentials: PasswordCredentials?
+private val org.gradle.api.artifacts.repositories.PasswordCredentials.passwordCredentials: Credentials?
     get() {
         return PasswordCredentials(
             // 認証情報がnullの場合、credentials自体をnullとする

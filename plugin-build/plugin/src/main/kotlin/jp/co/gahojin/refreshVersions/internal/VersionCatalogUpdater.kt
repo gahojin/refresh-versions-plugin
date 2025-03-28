@@ -1,8 +1,9 @@
 /*
  * (C) 2025 GAHOJIN, Inc.
  */
-package jp.co.gahojin.refreshVersions
+package jp.co.gahojin.refreshVersions.internal
 
+import jp.co.gahojin.refreshVersions.Constants
 import jp.co.gahojin.refreshVersions.model.UpdatableDependency
 import jp.co.gahojin.refreshVersions.toml.TomlFile
 import jp.co.gahojin.refreshVersions.toml.TomlLine

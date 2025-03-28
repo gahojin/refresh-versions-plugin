@@ -16,6 +16,9 @@ object Constants {
     // バージョン更新箇所シンボル
     const val VERSION_SYMBOL = "^"
 
+    // プラグインのパッケージ名接尾語
+    const val PLUGIN_NAME_SUFFIX = ".gradle.plugin"
+
     // カタログファイルセクション並び順
     val orderTomlSections = listOf(
         TomlSection.Root,
@@ -24,4 +27,10 @@ object Constants {
         TomlSection.Bundles,
         TomlSection.Plugins,
     )
+
+    // id("plugin") version "version" 文字列検知用正規表現
+    val pluginDslRegex = """id\s*\(?\s*["']([0-9a-zA-Z\-_.]*)["']\s*\)?\s*\.?\s*version\s*\(?\s*["']([0-9a-zA-Z\-_.]*)["']\s*\)?""".toRegex()
+
+    // //   ^ "x.y.z" 文字列検知用正規表現
+    val addCommentRegex = """^//\s*\^\s*["']([0-9a-zA-Z\-_.]*)["']""".toRegex()
 }

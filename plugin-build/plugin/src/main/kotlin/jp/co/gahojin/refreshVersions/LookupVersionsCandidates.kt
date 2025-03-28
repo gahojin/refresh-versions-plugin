@@ -17,14 +17,14 @@ import kotlin.time.Duration.Companion.minutes
 /**
  * バージョン候補を調べる.
  */
-internal class LookupVersionsCandidates(
+class LookupVersionsCandidates(
     private val cacheDurationMinutes: Int,
     logger: Logger,
     logLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BASIC,
     private val context: CoroutineContext = Dispatchers.IO,
 ) {
     private val loggingInterceptor = HttpLoggingInterceptor {
-        logger.lifecycle(it)
+        logger.info(it)
     }.setLevel(logLevel)
 
     suspend fun execute(dependencies: List<DependencyWithRepository>): List<UpdatableDependency> {

@@ -4,6 +4,7 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.extension.globalRepositories
+import jp.co.gahojin.refreshVersions.extension.pluginRepositories
 import okhttp3.Cache
 import org.gradle.api.Task
 import org.gradle.api.artifacts.repositories.ArtifactRepository
@@ -22,7 +23,7 @@ object ConfigHolder {
         get() = settings.globalRepositories
 
     val pluginRepositories: List<ArtifactRepository>
-        get() = settings.pluginManagement.repositories.asMap.values.toList()
+        get() = settings.pluginRepositories
 
     internal fun initialize(settings: Settings) {
         this.settings = settings
