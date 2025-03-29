@@ -11,6 +11,7 @@ import jp.co.gahojin.refreshVersions.toml.TomlLine
 import jp.co.gahojin.refreshVersions.toml.TomlSection
 import java.io.File
 
+@Suppress("MemberVisibilityCanBePrivate")
 internal object VersionCatalogUpdater {
     fun execute(
         file: File,

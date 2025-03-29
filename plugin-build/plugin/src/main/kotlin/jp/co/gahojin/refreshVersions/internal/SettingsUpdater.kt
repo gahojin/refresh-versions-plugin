@@ -47,7 +47,7 @@ internal object SettingsUpdater {
                                 // //    ^ "x.y.z"
                                 // ^^^^^^^^^ <-この箇所を生成する
                                 append("//")
-                                append(" ".repeat((result.range.start - previousNewLinePos + versionPos - 6).coerceAtLeast(0)))
+                                append(" ".repeat((result.range.first - previousNewLinePos + versionPos - 6).coerceAtLeast(0)))
                                 append("${Constants.VERSION_SYMBOL} ")
                             }
                             it.updatableVersions.forEach { version ->

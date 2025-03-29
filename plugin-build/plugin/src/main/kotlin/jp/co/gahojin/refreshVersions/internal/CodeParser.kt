@@ -61,8 +61,7 @@ internal object CodeParser {
         parseInternal(reader.readText())
             // 改行や3重クオートは処理しない
             .collect {
-                val state = it.state
-                when (state) {
+                when (val state = it.state) {
                     is State.BlockCode -> {
                         if (inPlugins) {
                             inPlugins = false
@@ -74,7 +73,7 @@ internal object CodeParser {
                     }
                     is State.General -> {
                         val isContainNewLine = it.isContainNewLine
-                        val endInclusive = if (isContainNewLine) it.range.endInclusive - 1 else it.range.endInclusive
+                        val endInclusive = if (isContainNewLine) it.range.last - 1 else it.range.last
                         idData?.updateRange(endInclusive)?.also {
                             if (isContainNewLine) {
                                 emitIdData()
@@ -84,7 +83,7 @@ internal object CodeParser {
                         }
                     }
                     is State.OneLineComment -> {
-                        val endInclusive = if (it.isContainNewLine) it.range.endInclusive - 1 else it.range.endInclusive
+                        val endInclusive = if (it.isContainNewLine) it.range.last - 1 else it.range.last
                         idData?.updateRange(endInclusive)?.also {
                             emitIdData()
                         } ?: run {
@@ -95,19 +94,19 @@ internal object CodeParser {
                         if (state.isMultiLine) {
                             emitIdData()
                         }
-                        idData?.updateRange(it.range.endInclusive) ?: run {
+                        idData?.updateRange(it.range.last) ?: run {
                             emit(it)
                         }
                     }
                     is State.InStringSingleQuote, is State.InStringDoubleQuote -> {
-                        idData?.updateRange(it.range.endInclusive) ?: run {
+                        idData?.updateRange(it.range.last) ?: run {
                             emit(it)
                         }
                     }
                     is State.MethodCallCode -> {
                         if (idMethodRegex.matches(it.trimText)) {
                             idData?.also { prev ->
-                                prev.updateRange(it.range.start)
+                                prev.updateRange(it.range.first)
                                 emit(prev)
                             }
                             idData = it.also {
@@ -191,10 +190,10 @@ internal object CodeParser {
             get() = rawText.contains('\n')
 
         val previousNewLinePos: Int
-            get() = code.lastIndexOf('\n', range.start)
+            get() = code.lastIndexOf('\n', range.first)
 
         fun updateRange(endInclusive: Int) = apply {
-            range = range.start..endInclusive
+            range = range.first..endInclusive
         }
     }
 
@@ -287,8 +286,7 @@ internal object CodeParser {
                     block(InStringTripleQuote(this, true), 0, true)
                     return 3
                 }
-                val c = code[index]
-                when (c) {
+                when (val c = code[index]) {
                     '"' -> block(InStringDoubleQuote(this), 0, true)
                     '\'' -> block(InStringSingleQuote(this), 0, true)
                     else -> {
