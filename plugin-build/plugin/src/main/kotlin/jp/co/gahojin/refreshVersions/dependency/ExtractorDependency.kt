@@ -20,7 +20,11 @@ class ExtractorDependency {
     fun extract(rootProject: Project): List<DependencyWithRepository> {
         val allDependencies = mutableMapOf<Dependency, MutableSet<Repository>>()
         rootProject.allprojects {
-            extractDependencies(allDependencies, it.configurations, it.repositoriesWithGlobal + it.repositoriesWithPlugin)
+            extractDependencies(
+                destination = allDependencies,
+                configurations = it.configurations,
+                repositories = it.repositoriesWithGlobal + it.repositoriesWithPlugin,
+            )
             extractDependencies(allDependencies, it.buildscript.configurations, it.repositoriesWithPlugin)
         }
 

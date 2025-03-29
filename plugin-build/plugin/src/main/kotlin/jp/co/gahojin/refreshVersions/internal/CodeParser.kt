@@ -199,14 +199,23 @@ internal object CodeParser {
 
     sealed interface State {
         val isCode: Boolean
-        suspend fun nextState(code: CharSequence, index: Int, block: suspend (state: State, offset: Int, emit: Boolean) -> Unit) : Int
+
+        suspend fun nextState(
+            code: CharSequence,
+            index: Int,
+            block: suspend (state: State, offset: Int, emit: Boolean) -> Unit,
+        ): Int
 
         class InComment(
             val prevState: State,
         ) : State {
             override val isCode = false
             var isMultiLine = false
-            override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit
+            ): Int {
                 /* /* */のような、コメントの中のコメントを処理する */
                 if (code.startsWith("/*", index)) {
                     block(InComment(prevState), 0, true)
@@ -222,44 +231,64 @@ internal object CodeParser {
                 return 1
             }
         }
+
         class OneLineComment(
             val prevState: State,
         ) : State {
             override val isCode = false
-            override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit
+            ): Int {
                 if (code[index] == '\n') {
                     block(prevState, 1, true)
                 }
                 return 1
             }
         }
+
         class InStringSingleQuote(
             val prevState: State,
         ) : State {
             override val isCode = true
-            override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit
+            ): Int {
                 if (code[index] == '\'') {
                     block(prevState, 1, true)
                 }
                 return 1
             }
         }
+
         class InStringDoubleQuote(
             private val prevState: State,
         ) : State {
             override val isCode = true
-            override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit,
+            ): Int {
                 if (code[index] == '"') {
                     block(prevState, 1, true)
                 }
                 return 1
             }
         }
+
         class InStringTripleQuote(
             private val prevState: State,
             override val isCode: Boolean,
         ) : State {
-            override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit
+            ): Int {
                 if (code.startsWith("\"\"\"", index)) {
                     block(prevState, 3, true)
                     return 3
@@ -271,9 +300,15 @@ internal object CodeParser {
                 return 1
             }
         }
+
         abstract class Code : State {
             override val isCode = true
-            override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit) : Int {
+
+            override suspend fun nextState(
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit,
+            ): Int {
                 if (code.startsWith("//", index)) {
                     block(OneLineComment(this), 0, true)
                     return 2
@@ -295,10 +330,22 @@ internal object CodeParser {
                 }
                 return 1
             }
-            open suspend fun nextState(c: Char, code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int = 1
+
+            open suspend fun nextState(
+                c: Char,
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit,
+            ): Int = 1
         }
+
         object General : Code() {
-            override suspend fun nextState(c: Char, code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                c: Char,
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit,
+            ): Int {
                 when (c) {
                     '{' -> block(BlockCode(this), 0, false)
                     '(' -> block(MethodCallCode(this), 0, false)
@@ -307,10 +354,16 @@ internal object CodeParser {
                 return super.nextState(c, code, index, block)
             }
         }
+
         class BlockCode(
             private val prevState: State,
         ) : Code() {
-            override suspend fun nextState(c: Char, code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                c: Char,
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit,
+            ): Int {
                 when (c) {
                     '{' -> block(BlockCode(this), 0, true)
                     '(' -> block(MethodCallCode(this), 0, true)
@@ -320,10 +373,16 @@ internal object CodeParser {
                 return super.nextState(c, code, index, block)
             }
         }
+
         class MethodCallCode(
             private val prevState: State,
         ) : Code() {
-            override suspend fun nextState(c: Char, code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int {
+            override suspend fun nextState(
+                c: Char,
+                code: CharSequence,
+                index: Int,
+                block: suspend (State, Int, Boolean) -> Unit,
+            ): Int {
                 if (c == ')') {
                     block(prevState, 1, true)
                 }

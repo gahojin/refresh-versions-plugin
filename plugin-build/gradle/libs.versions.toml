@@ -24,6 +24,8 @@ okhttp = "5.0.0-alpha.14"
 
 [libraries]
 
+detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+
 fastxml-woodstox = { group = "com.fasterxml.woodstox", name = "woodstox-core", version.ref = "fastxml-woodstox" }
 
 kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }

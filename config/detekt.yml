@@ -34,3 +34,11 @@ naming:
   PackageNaming:
     active: false
 
+formatting:
+  active: true
+  ArgumentListWrapping:
+    active: false
+  MaximumLineLength:
+    maxLineLength: 200
+  Wrapping:
+    active: false
