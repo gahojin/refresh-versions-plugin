@@ -5,22 +5,23 @@ package jp.co.gahojin.refreshVersions.internal
 
 import jp.co.gahojin.refreshVersions.Constants
 import jp.co.gahojin.refreshVersions.Constants.pluginDslRegex
+import jp.co.gahojin.refreshVersions.extension.writeTextWhenUpdated
 import jp.co.gahojin.refreshVersions.model.UpdatableDependency
 import kotlinx.coroutines.runBlocking
-import org.gradle.api.provider.Property
 import java.io.File
 import java.io.Reader
 
 internal object SettingsUpdater {
     fun execute(
-        files: List<Property<File>>,
+        files: List<File>,
         dependencies: List<UpdatableDependency>,
     ) {
-        files.mapNotNull { it.orNull }
-            .forEach { file ->
-                val newContent = execute(file.reader(), dependencies)
-                file.writeText(newContent)
+        files.forEach { file ->
+            val content = file.bufferedReader().use {
+                execute(it, dependencies)
             }
+            file.writeTextWhenUpdated(content)
+        }
     }
 
     internal fun execute(

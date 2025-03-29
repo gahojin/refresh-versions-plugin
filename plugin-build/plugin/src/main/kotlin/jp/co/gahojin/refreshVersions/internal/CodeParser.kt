@@ -10,15 +10,15 @@ import java.io.Reader
 /**
  * コメントをスキップするための簡素なコードパーサー.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 internal object CodeParser {
     private val pluginsBlockRegex = """plugins\s*\{""".toRegex()
     private val idMethodRegex = """id\s*\(""".toRegex()
 
     suspend fun parse(reader: Reader, visitor: Visitor) {
-        val code = reader.readText()
         var inIdMethod = false
 
-        parse(code).collect {
+        parse(reader).collect {
             if (it.isIdMethod) {
                 inIdMethod = true
                 visitor.visitPlugin(it)
@@ -49,7 +49,7 @@ internal object CodeParser {
     /**
      * pluginsブロック内のidメソッド呼出箇所検知
      */
-    fun parse(code: CharSequence) = flow<Result> {
+    fun parse(reader: Reader) = flow {
         var inPlugins = false
         var idData: Result? = null
 
@@ -58,7 +58,7 @@ internal object CodeParser {
             idData = null
         }
 
-        parseInternal(code)
+        parseInternal(reader.readText())
             // 改行や3重クオートは処理しない
             .collect {
                 val state = it.state
@@ -124,7 +124,7 @@ internal object CodeParser {
             }
     }
 
-    internal fun parseInternal(code: CharSequence) = flow<Result> {
+    internal fun parseInternal(code: CharSequence) = flow {
         var state: State = State.General
         var startCodeIndex = 0
         var isNextEscapedChar = false

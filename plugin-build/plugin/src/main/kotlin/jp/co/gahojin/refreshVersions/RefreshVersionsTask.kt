@@ -12,8 +12,6 @@ import jp.co.gahojin.refreshVersions.extension.register
 import jp.co.gahojin.refreshVersions.internal.SettingsUpdater
 import jp.co.gahojin.refreshVersions.internal.VersionCatalogUpdater
 import jp.co.gahojin.refreshVersions.model.withDependencies
-import jp.co.gahojin.refreshVersions.toml.TomlFile
-import jp.co.gahojin.refreshVersions.toml.TomlSection
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -67,10 +65,6 @@ abstract class RefreshVersionsTask : DefaultTask() {
             return
         }
 
-        // TOMLファイルに定義されている情報を取得
-        val file = versionsTomlFile.get()
-        val toml = TomlFile.parseToml(file.bufferedReader())
-
         // configuration構文で定義した依存を抽出
         runBlocking {
             // バージョンカタログにあり、実際に使用されているものに絞り込む
@@ -86,18 +80,16 @@ abstract class RefreshVersionsTask : DefaultTask() {
             val pluginUpdatableDependencies = lookupVersionsCandidates.execute(pluginDependencies)
             val settingsPluginUpdatableDependencies = lookupVersionsCandidates.execute(settingsPluginDependencies)
 
-            // バージョンカタログファイルを更新
-            toml.removeComments()
             VersionCatalogUpdater.execute(
-                toml = toml,
+                file = versionsTomlFile.get(),
                 libraryDependencies = libraryUpdatableDependencies,
                 pluginDependencies = pluginUpdatableDependencies,
+                sortSection = sortSection.getOrElse(false),
             )
-            file.writeText(toml.format(sortSection.getOrElse(false)))
 
             // settings.gradle(.kts)ファイルを更新
             SettingsUpdater.execute(
-                files = listOf(rootSettingsFile, buildSrcSettingsFile),
+                files = listOf(rootSettingsFile, buildSrcSettingsFile).mapNotNull { it.orNull },
                 dependencies = settingsPluginUpdatableDependencies,
             )
         }
