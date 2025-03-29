@@ -4,6 +4,7 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.dependency.ExtractorDependency
+import jp.co.gahojin.refreshVersions.extension.debug
 import jp.co.gahojin.refreshVersions.extension.defaultVersionCatalog
 import jp.co.gahojin.refreshVersions.extension.getSettingsFile
 import jp.co.gahojin.refreshVersions.extension.libraries
@@ -57,6 +58,16 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
     @TaskAction
     fun refreshVersions() {
+        logger.debug {
+            buildString {
+                appendLine("initialize task...")
+                appendLine("  versionsTomlFile: ${versionsTomlFile.orNull}")
+                appendLine("  rootSettingsFile: ${rootSettingsFile.orNull}")
+                appendLine("  buildSrcSettingsFile: ${buildSrcSettingsFile.orNull}")
+                appendLine("  sortSection: ${sortSection.orNull}")
+                appendLine("  cacheDurationMinutes: ${cacheDurationMinutes.orNull}")
+            }
+        }
         ConfigHolder.initialize(this)
 
         // バージョンカタログに定義されている情報を取得
@@ -67,6 +78,16 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
         // configuration構文で定義した依存を抽出
         runBlocking {
+            logger.debug {
+                buildString {
+                    appendLine("fetch dependencies from gradle.")
+                    append("dependencies: ").appendLine(dependencies.joinToString(separator = ", "))
+                    append("settingsPluginDependencies: ").appendLine(settingsPluginDependencies.joinToString(separator = ", "))
+                    append("versionCatalog(libraries): ").appendLine(versionCatalog.libraries().joinToString(separator = ", "))
+                    append("versionCatalog(plugins): ").appendLine(versionCatalog.plugins().joinToString(separator = ", "))
+                }
+            }
+
             // バージョンカタログにあり、実際に使用されているものに絞り込む
             val libraryDependencies = versionCatalog.libraries().withDependencies(dependencies)
             val pluginDependencies = versionCatalog.plugins().withDependencies(dependencies)
@@ -79,6 +100,15 @@ abstract class RefreshVersionsTask : DefaultTask() {
             val libraryUpdatableDependencies = lookupVersionsCandidates.execute(libraryDependencies)
             val pluginUpdatableDependencies = lookupVersionsCandidates.execute(pluginDependencies)
             val settingsPluginUpdatableDependencies = lookupVersionsCandidates.execute(settingsPluginDependencies)
+
+            logger.debug {
+                buildString {
+                    appendLine("after lookup versions.")
+                    append("library: ").appendLine(libraryUpdatableDependencies.joinToString(separator = ", "))
+                    append("plugin: ").appendLine(pluginUpdatableDependencies.joinToString(separator = ", "))
+                    append("settingPlugin: ").appendLine(settingsPluginUpdatableDependencies.joinToString(separator = ", "))
+                }
+            }
 
             VersionCatalogUpdater.execute(
                 file = versionsTomlFile.get(),

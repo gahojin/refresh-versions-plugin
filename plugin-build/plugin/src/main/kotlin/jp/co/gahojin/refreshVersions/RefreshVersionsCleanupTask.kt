@@ -3,6 +3,7 @@
  */
 package jp.co.gahojin.refreshVersions
 
+import jp.co.gahojin.refreshVersions.extension.debug
 import jp.co.gahojin.refreshVersions.extension.getSettingsFile
 import jp.co.gahojin.refreshVersions.extension.register
 import jp.co.gahojin.refreshVersions.internal.SettingsCleaner
@@ -37,6 +38,15 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
 
     @TaskAction
     fun cleanUp() {
+        logger.debug {
+            buildString {
+                appendLine("initialize task...")
+                appendLine("  versionsTomlFile: ${versionsTomlFile.orNull}")
+                appendLine("  rootSettingsFile: ${rootSettingsFile.orNull}")
+                appendLine("  buildSrcSettingsFile: ${buildSrcSettingsFile.orNull}")
+                appendLine("  sortSection: ${sortSection.orNull}")
+            }
+        }
         VersionCatalogCleaner.execute(
             file = versionsTomlFile.get(),
             sortSection = sortSection.getOrElse(false),
