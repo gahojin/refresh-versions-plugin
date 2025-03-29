@@ -4,12 +4,33 @@
 package jp.co.gahojin.refreshVersions.internal
 
 import jp.co.gahojin.refreshVersions.Constants
+import jp.co.gahojin.refreshVersions.extension.writeTextWhenUpdated
 import jp.co.gahojin.refreshVersions.model.UpdatableDependency
 import jp.co.gahojin.refreshVersions.toml.TomlFile
 import jp.co.gahojin.refreshVersions.toml.TomlLine
 import jp.co.gahojin.refreshVersions.toml.TomlSection
+import java.io.File
 
 internal object VersionCatalogUpdater {
+    fun execute(
+        file: File,
+        libraryDependencies: List<UpdatableDependency>,
+        pluginDependencies: List<UpdatableDependency>,
+        sortSection: Boolean,
+    ) {
+        val content = file.bufferedReader().use {
+            val tomlFile = TomlFile.parseToml(it)
+
+            // バージョンカタログファイルを更新
+            tomlFile.removeComments()
+            execute(tomlFile, libraryDependencies, pluginDependencies)
+
+            tomlFile.format(sortSection)
+        }
+
+        file.writeTextWhenUpdated(content)
+    }
+
     fun execute(
         toml: TomlFile,
         libraryDependencies: List<UpdatableDependency>,

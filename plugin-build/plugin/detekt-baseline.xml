@@ -2,10 +2,10 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>CyclomaticComplexMethod:CodeParser.kt$CodeParser$fun parse(code: CharSequence)</ID>
+    <ID>CyclomaticComplexMethod:CodeParser.kt$CodeParser$fun parse(reader: Reader)</ID>
     <ID>CyclomaticComplexMethod:Version.kt$Item.ListItem$override fun compareTo(other: Item?): Int</ID>
     <ID>CyclomaticComplexMethod:Version.kt$Version.Companion$private fun parseVersion(version: String): ListItem</ID>
-    <ID>LongMethod:CodeParser.kt$CodeParser$fun parse(code: CharSequence)</ID>
+    <ID>LongMethod:CodeParser.kt$CodeParser$fun parse(reader: Reader)</ID>
     <ID>LongMethod:Version.kt$Version.Companion$private fun parseVersion(version: String): ListItem</ID>
     <ID>LoopWithTooManyJumpStatements:CodeParser.kt$CodeParser$while</ID>
     <ID>NestedBlockDepth:MavenMetadataParser.kt$MavenMetadataParser$@JvmStatic fun parse(xml: String): List&lt;Version></ID>

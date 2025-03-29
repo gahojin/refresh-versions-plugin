@@ -3,20 +3,19 @@
  */
 package jp.co.gahojin.refreshVersions.internal
 
+import jp.co.gahojin.refreshVersions.extension.writeTextWhenUpdated
 import kotlinx.coroutines.runBlocking
-import org.gradle.api.provider.Property
 import java.io.File
 import java.io.Reader
 
 internal object SettingsCleaner {
-    fun execute(
-        files: List<Property<File>>,
-    ) {
-        files.mapNotNull { it.orNull }
-            .forEach { file ->
-                val newContent = execute(file.reader())
-                file.writeText(newContent)
+    fun execute(files: List<File>) {
+        files.forEach { file ->
+            val content = file.bufferedReader().use {
+                execute(it)
             }
+            file.writeTextWhenUpdated(content)
+        }
     }
 
     internal fun execute(reader: Reader) = buildString {

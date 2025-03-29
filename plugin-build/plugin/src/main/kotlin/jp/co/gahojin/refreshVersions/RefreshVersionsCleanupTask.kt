@@ -37,15 +37,14 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
 
     @TaskAction
     fun cleanUp() {
-        val file = versionsTomlFile.get()
-        val content = file.bufferedReader().use { reader ->
-            VersionCatalogCleaner.execute(reader, sortSection.getOrElse(false))
-        }
-        file.writeText(content)
+        VersionCatalogCleaner.execute(
+            file = versionsTomlFile.get(),
+            sortSection = sortSection.getOrElse(false),
+        )
 
         // settings.gradle(.kts)ファイルを更新
         SettingsCleaner.execute(
-            files = listOf(rootSettingsFile, buildSrcSettingsFile),
+            files = listOf(rootSettingsFile, buildSrcSettingsFile).mapNotNull { it.orNull },
         )
     }
 
