@@ -49,11 +49,11 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
     private val dependencies by lazy {
         // 実際に使用されているライブラリやプラグインを抽出
-        ExtractorDependency().extract(project)
+        ExtractorDependency().extract(project, logger)
     }
 
     private val settingsPluginDependencies by lazy {
-        ExtractorDependency().extract(ConfigHolder.settings)
+        ExtractorDependency().extract(ConfigHolder.settings, logger)
     }
 
     @TaskAction
