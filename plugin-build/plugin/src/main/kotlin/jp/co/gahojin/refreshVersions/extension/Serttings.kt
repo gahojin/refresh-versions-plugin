@@ -28,7 +28,7 @@ fun Settings.dependencies(): Sequence<Dependency> {
             // 依存名が、pluginId:pluginId.gradle.pluginとなっているものに絞り込む
             val group = it.group ?: return@filter false
             return@filter it.name.endsWith(PLUGIN_NAME_SUFFIX) &&
-                    group == it.name.substringBefore(PLUGIN_NAME_SUFFIX) &&
-                    pluginManager.hasPlugin(group)
+                group == it.name.substringBefore(PLUGIN_NAME_SUFFIX) &&
+                pluginManager.hasPlugin(group)
         }
 }

@@ -45,9 +45,11 @@ sealed class MavenDependencyVersionsFetcher : DependencyVersionsFetcher {
             client.newCall(request).executeAsync().use { response ->
                 if (response.isSuccessful) {
                     response.use { it.body.string() }
-                } else when (response.code) {
-                    401, 404 -> null
-                    else -> throw HttpException(response.code, response.body)
+                } else {
+                    when (response.code) {
+                        401, 404 -> null
+                        else -> throw HttpException(response.code, response.body)
+                    }
                 }
             }
         }

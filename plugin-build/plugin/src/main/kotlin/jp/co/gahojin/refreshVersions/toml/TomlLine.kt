@@ -7,6 +7,7 @@ import jp.co.gahojin.refreshVersions.Constants.PLUGIN_NAME_SUFFIX
 import jp.co.gahojin.refreshVersions.model.ModuleId
 import org.gradle.api.artifacts.ModuleIdentifier
 
+@Suppress("MemberVisibilityCanBePrivate")
 class TomlLine(
     val section: TomlSection,
     val text: String,
@@ -43,7 +44,7 @@ class TomlLine(
         ModuleId(group = group, name = name)
     }
 
-    override fun toString(): String = "TomlLine(section=${section}, key=${key}, value=${value}, attributes=${attributes}\n$text"
+    override fun toString(): String = "TomlLine(section=$section, key=$key, value=$value, attributes=${attributes}\n$text"
 
     companion object {
         internal val NEW_LINE = TomlLine(TomlSection.Custom("blank"), "")
@@ -63,7 +64,9 @@ class TomlLine(
                             put("id", splitByColon[0].trim())
                             put("version", splitByColon[1])
                         }
-                    } else emptyMap()
+                    } else {
+                        emptyMap()
+                    }
                 }
                 TomlSection.Libraries -> {
                     if (value.startsWith('{')) {
@@ -78,10 +81,12 @@ class TomlLine(
                                 attributes.remove("module")
                             } ?: attributes
                         }
-                    } else buildMap {
-                        put("group", splitByColon[0])
-                        if (splitByColon.size > 1) put("name", splitByColon[1].trim())
-                        if (splitByColon.size > 2) put("version", splitByColon[2])
+                    } else {
+                        buildMap {
+                            put("group", splitByColon[0])
+                            if (splitByColon.size > 1) put("name", splitByColon[1].trim())
+                            if (splitByColon.size > 2) put("version", splitByColon[2])
+                        }
                     }
                 }
 

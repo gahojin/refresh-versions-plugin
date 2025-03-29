@@ -12,7 +12,7 @@
     <ID>NestedBlockDepth:Version.kt$Item.ListItem$fun normalize()</ID>
     <ID>NestedBlockDepth:Version.kt$Item.ListItem$override fun compareTo(other: Item?): Int</ID>
     <ID>NestedBlockDepth:Version.kt$Version.Companion$private fun parseVersion(version: String): ListItem</ID>
-    <ID>ReturnCount:CodeParser.kt$CodeParser.State.Code$override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit) : Int</ID>
-    <ID>ReturnCount:CodeParser.kt$CodeParser.State.InComment$override suspend fun nextState(code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit): Int</ID>
+    <ID>ReturnCount:CodeParser.kt$CodeParser.State.Code$override suspend fun nextState( code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit, ): Int</ID>
+    <ID>ReturnCount:CodeParser.kt$CodeParser.State.InComment$override suspend fun nextState( code: CharSequence, index: Int, block: suspend (State, Int, Boolean) -> Unit ): Int</ID>
   </CurrentIssues>
 </SmellBaseline>

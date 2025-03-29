@@ -28,7 +28,7 @@ enum class VersionQualifier(
         fun getComparableQualifier(value: String): String {
             val key = value.lowercase()
             return cache.getOrElse(key) {
-                "${maxOrder}-${key}"
+                "$maxOrder-$key"
             }
         }
     }

@@ -39,7 +39,6 @@ val Project.repositoriesWithPlugin: List<ArtifactRepository>
         return repositories
     }
 
-
 fun Project.getSettingsFile(prefix: String = ""): File? {
     return file("${prefix}settings.gradle.kts").takeIf { it.exists() } ?: run {
         file("${prefix}settings.gradle").takeIf { it.exists() }

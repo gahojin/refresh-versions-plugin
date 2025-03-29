@@ -28,6 +28,8 @@ dependencies {
     implementation(libs.okhttp.coroutines)
     implementation(libs.okhttp.logging.interceptor)
 
+    detektPlugins(libs.detekt.formatting)
+
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(platform(libs.kotest.bom))
