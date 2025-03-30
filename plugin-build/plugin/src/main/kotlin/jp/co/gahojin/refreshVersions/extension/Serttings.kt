@@ -14,12 +14,14 @@ val Settings.globalRepositories: List<ArtifactRepository>
     }.getOrDefault(emptyList())
 
 val Settings.pluginRepositories: List<ArtifactRepository>
-    get() = pluginManagement.repositories.asMap.values.toList()
+    get() = pluginManagement.repositories.asMap.values.toList().ifEmpty {
+        // リポジトリ情報が取得出来ない場合、Gradle Plugin Portalを追加する
+        listOf(pluginManagement.repositories.gradlePluginPortal { })
+    }
 
 val Settings.defaultCatalogName: String
-    get() = runCatching {
-        dependencyResolutionManagement.defaultLibrariesExtensionName.get()
-    }.getOrDefault("libs")
+    get() = dependencyResolutionManagement
+        .defaultLibrariesExtensionName.getOrElse("libs")
 
 fun Settings.dependencies(): Sequence<Dependency> {
     // settingsに定義されているプラグイン情報が直接取得出来ないため、classpathから抽出する
