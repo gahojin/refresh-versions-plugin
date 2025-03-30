@@ -8,6 +8,7 @@ import jp.co.gahojin.refreshVersions.extension.debug
 import jp.co.gahojin.refreshVersions.extension.dependencies
 import jp.co.gahojin.refreshVersions.extension.pluginRepositories
 import jp.co.gahojin.refreshVersions.extension.repositoriesWithGlobal
+import jp.co.gahojin.refreshVersions.extension.repositoriesWithPlugin
 import jp.co.gahojin.refreshVersions.model.Dependency
 import jp.co.gahojin.refreshVersions.model.DependencyWithRepository
 import jp.co.gahojin.refreshVersions.model.Repository
@@ -33,7 +34,7 @@ class ExtractorDependency {
         val allDependencies = mutableMapOf<Dependency, MutableSet<Repository>>()
         rootProject.allprojects {
             extractDependencies(it, allDependencies, it.configurations, it.repositoriesWithGlobal, logger)
-            extractDependencies(it, allDependencies, it.buildscript.configurations, it.repositoriesWithGlobal, logger)
+            extractDependencies(it, allDependencies, it.buildscript.configurations, it.repositoriesWithPlugin, logger)
         }
 
         return allDependencies.entries.map { (dependency, repositories) ->
