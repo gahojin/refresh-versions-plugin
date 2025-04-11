@@ -5,22 +5,17 @@
     "preinstall": "pnpm dlx only-allow pnpm",
     "ncu": "npm-check-updates -u"
   },
-  "devDependencies": {
+  "dependencies": {
     "@commitlint/cli": "19.8.0",
     "@commitlint/config-conventional": "19.8.0",
-    "lefthook": "1.11.7",
-    "npm-check-updates": "17.1.16"
+    "lefthook": "1.11.8",
+    "npm-check-updates": "17.1.18"
   },
-  "packageManager": "pnpm@10.6.5",
+  "packageManager": "pnpm@10.8.0",
   "engines": {
     "node": ">=20.x",
     "npm": "use pnpm",
     "pnpm": ">=9",
     "yarn": "use pnpm"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "lefthook"
-    ]
   }
 }

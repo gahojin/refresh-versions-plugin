@@ -190,5 +190,5 @@ node_modules/
 .kotlin/
 
 # Lefthook
-lefthook-local.yml
+lefthook-local.*
 
