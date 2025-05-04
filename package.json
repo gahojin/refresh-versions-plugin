@@ -1,5 +1,4 @@
 {
-  "name": "refresh-versions-plugin",
   "private": true,
   "scripts": {
     "preinstall": "pnpm dlx only-allow pnpm",
@@ -11,7 +10,7 @@
     "lefthook": "1.11.12",
     "npm-check-updates": "18.0.1"
   },
-  "packageManager": "pnpm@10.8.0",
+  "packageManager": "pnpm@10.10.0",
   "engines": {
     "node": ">=20.x",
     "npm": "use pnpm",
