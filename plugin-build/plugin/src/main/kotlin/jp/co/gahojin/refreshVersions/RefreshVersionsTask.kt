@@ -131,7 +131,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
         @JvmStatic
         fun register(project: Project, extensions: RefreshVersionsExtension) {
             project.tasks.register<RefreshVersionsTask>(TASK_NAME) {
-                it.versionsTomlFile.set(extensions.getVersionsTomlFile())
+                it.versionsTomlFile.set(extensions.getVersionsTomlFile(project))
                 it.sortSection.set(extensions.sortSection)
                 it.cacheDurationMinutes.set(extensions.cacheDurationMinutes)
                 it.rootSettingsFile.set(project.getSettingsFile())
