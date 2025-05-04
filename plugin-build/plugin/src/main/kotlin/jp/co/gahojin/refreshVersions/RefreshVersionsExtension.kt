@@ -4,6 +4,7 @@
 package jp.co.gahojin.refreshVersions
 
 import jp.co.gahojin.refreshVersions.extension.create
+import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -22,9 +23,8 @@ abstract class RefreshVersionsExtension {
     @get:Input
     var cacheDurationMinutes: Int = DEFAULT_CACHE_DURATION
 
-    internal fun getVersionsTomlFile(): File {
-        val settings = ConfigHolder.settings
-        return versionsTomlFile ?: settings.settingsDir.resolve(Constants.LIBS_VERSIONS_TOML)
+    internal fun getVersionsTomlFile(project: Project): File {
+        return versionsTomlFile ?: project.file(Constants.LIBS_VERSIONS_TOML)
     }
 
     companion object {

@@ -64,7 +64,7 @@ abstract class RefreshVersionsCleanupTask : DefaultTask() {
         @JvmStatic
         fun register(project: Project, extensions: RefreshVersionsExtension) {
             project.tasks.register<RefreshVersionsCleanupTask>(TASK_NAME) {
-                it.versionsTomlFile.set(extensions.getVersionsTomlFile())
+                it.versionsTomlFile.set(extensions.getVersionsTomlFile(project))
                 it.sortSection.set(extensions.sortSection)
                 it.rootSettingsFile.set(project.getSettingsFile())
                 it.buildSrcSettingsFile.set(project.getSettingsFile("buildSrc/"))
