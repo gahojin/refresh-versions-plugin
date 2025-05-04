@@ -57,12 +57,12 @@ java {
 kotlin {
     compilerOptions {
         javaParameters = true
-        jvmTarget = JvmTarget.JVM_11
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
 tasks.withType<Detekt>().configureEach {
-    jvmTarget = "11"
+    jvmTarget = "1.8"
     reports {
         html.required = false
         xml.required = false
@@ -75,7 +75,7 @@ tasks.withType<Detekt>().configureEach {
 }
 
 tasks.withType<DetektCreateBaselineTask>().configureEach {
-    jvmTarget = "11"
+    jvmTarget = "1.8"
     exclude("build/")
     exclude("resources/")
 }
