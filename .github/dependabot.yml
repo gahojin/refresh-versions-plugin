@@ -24,10 +24,12 @@ updates:
       all:
         patterns:
           - "*"
-    # 古いGradleをサポートするため、kotlin関連のアップデートを行わない
     ignore:
+      # 古いGradleをサポートするため、kotlin関連のアップデートを行わない
       - dependency-name: "org.jetbrains.kotlin.*"
       - dependency-name: "org.jetbrains.kotlin:kotlin-*"
       - dependency-name: "org.jetbrains.kotlinx:kotlinx-coroutines-*"
+      # Kotlinアップデート出来ないため、古いKotlinをサポートしないOkHttpバージョンにはアップデートしない
+      - dependency-name: "com.squareup.okhttp3:*"
     schedule:
       interval: "weekly"
