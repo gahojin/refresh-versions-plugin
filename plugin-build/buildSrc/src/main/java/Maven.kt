@@ -2,7 +2,7 @@ object Maven {
     const val PLUGIN_ID = "jp.co.gahojin.refreshVersions"
     const val ARTIFACT_ID = "${PLUGIN_ID}.gradle.plugin"
     const val DESCRIPTION = "Refresh Versions Plugin"
-    const val VERSION = "0.1.4"
+    const val VERSION = "0.1.5"
     const val GITHUB_REPOSITORY = "gahojin/refresh-versions-plugin"
     const val LICENSE_NAME = "Apache-2.0"
     const val LICENSE_URL = "https://www.apache.org/licenses/LICENSE-2.0.txt"
