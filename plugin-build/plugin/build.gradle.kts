@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.coroutines)
     implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.okio)
 
     detektPlugins(libs.detekt.formatting)
 

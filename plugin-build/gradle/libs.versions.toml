@@ -22,6 +22,8 @@ mockk = "1.14.2"
 
 okhttp = "5.0.0-alpha.14"
 
+okio = "3.9.1"
+
 [libraries]
 
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
@@ -53,6 +55,8 @@ okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "
 okhttp-coroutines = { group = "com.squareup.okhttp3", name = "okhttp-coroutines", version.ref = "okhttp" }
 
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+okio = { group = "com.squareup.okio", name = "okio-jvm", version.ref = "okio" }
 
 [plugins]
 
