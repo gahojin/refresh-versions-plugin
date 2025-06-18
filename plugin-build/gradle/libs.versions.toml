@@ -6,6 +6,8 @@ detekt = "1.23.8"
 
 dokka = "2.0.0"
 
+fastxml-jackson = "2.13.5"
+
 fastxml-woodstox = "7.1.1"
 
 kotest = "5.9.1"
@@ -27,6 +29,8 @@ okio = "3.9.1"
 [libraries]
 
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+
+fastxml-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "fastxml-jackson" }
 
 fastxml-woodstox = { group = "com.fasterxml.woodstox", name = "woodstox-core", version.ref = "fastxml-woodstox" }
 
