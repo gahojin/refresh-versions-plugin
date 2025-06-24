@@ -112,7 +112,7 @@ mavenPublishing {
         sourcesJar = true,
     ))
 
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral()
 
     coordinates(Maven.PLUGIN_ID, Maven.ARTIFACT_ID, Maven.VERSION)
 
