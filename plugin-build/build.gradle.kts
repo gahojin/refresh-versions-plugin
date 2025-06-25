@@ -13,7 +13,7 @@ plugins {
 allprojects {
     configurations.all {
         resolutionStrategy {
-            force(libs.fastxml.jackson.databind)
+            force(libs.fastxml.jackson.core)
             force(libs.fastxml.woodstox)
         }
     }
