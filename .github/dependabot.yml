@@ -31,7 +31,7 @@ updates:
       - dependency-name: "org.jetbrains.kotlinx:kotlinx-coroutines-*"
       # Kotlinアップデート出来ないため、古いKotlinをサポートしないOkHttpバージョンにはアップデートしない
       - dependency-name: "com.squareup.okhttp3:*"
-      # DokkaとJacksonの依存関係から、2.13.5よりバージョンを上げなし
-      - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
+      # DokkaとJacksonの依存関係から、2.15.3よりバージョンを上げなし
+      - dependency-name: "com.fasterxml.jackson.core:jackson-*"
     schedule:
       interval: "weekly"
