@@ -24,7 +24,7 @@ mockk = "1.14.4"
 
 okhttp = "5.0.0-alpha.16"
 
-okio = "3.14.0"
+okio = "3.15.0"
 
 [libraries]
 
