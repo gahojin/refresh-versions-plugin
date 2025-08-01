@@ -13,10 +13,10 @@ inline fun <reified T : Task> TaskContainer.register(name: String, configuration
     return register(name, T::class.java, configurationAction)
 }
 
-inline fun <reified T> ExtensionContainer.create(name: String): T {
+inline fun <reified T : Any> ExtensionContainer.create(name: String): T {
     return create(name, T::class.java)
 }
 
-inline fun <reified T> ExtensionContainer.findByType(): T? {
+inline fun <reified T : Any> ExtensionContainer.findByType(): T? {
     return findByType(T::class.java)
 }

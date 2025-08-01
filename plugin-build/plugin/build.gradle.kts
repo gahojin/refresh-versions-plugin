@@ -3,6 +3,7 @@ import com.vanniktech.maven.publish.JavadocJar
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.detekt)
@@ -57,12 +58,13 @@ java {
 kotlin {
     compilerOptions {
         javaParameters = true
-        jvmTarget = JvmTarget.JVM_1_8
+        jvmTarget = JvmTarget.fromTarget(Build.jvmTarget.toString())
+        apiVersion = KotlinVersion.KOTLIN_2_0
     }
 }
 
 tasks.withType<Detekt>().configureEach {
-    jvmTarget = "1.8"
+    jvmTarget = Build.jvmTarget.toString()
     reports {
         html.required = false
         xml.required = false
@@ -75,7 +77,7 @@ tasks.withType<Detekt>().configureEach {
 }
 
 tasks.withType<DetektCreateBaselineTask>().configureEach {
-    jvmTarget = "1.8"
+    jvmTarget = Build.jvmTarget.toString()
     exclude("build/")
     exclude("resources/")
 }

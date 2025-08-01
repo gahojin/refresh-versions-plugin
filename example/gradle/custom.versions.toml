@@ -34,11 +34,16 @@ kotlin = "2.1.0"
 ##     ^ "2.2.0-RC"
 ##     ^ "2.2.0-RC2"
 ##     ^ "2.2.0-RC3"
+##     ^ "2.2.0"
+##     ^ "2.2.10-RC"
+##     ^ "2.2.20-Beta1"
+##     ^ "2.2.20-Beta2"
 
 truth = "1.4.4"
 
 zero-allocation-hashing = "0.26ea0"
 ##                      ^ "0.27ea0"
+##                      ^ "0.27ea1"
 
 [plugins]
 
@@ -71,11 +76,15 @@ kotest-bom = { group = "io.kotest", version = "5.9.0", name = "kotest-bom"      
 ##                                          ^ "6.0.0.M2", name = "kotest-bom"        }
 ##                                          ^ "6.0.0.M3", name = "kotest-bom"        }
 ##                                          ^ "6.0.0.M4", name = "kotest-bom"        }
+##                                          ^ "6.0.0.M9", name = "kotest-bom"        }
 
 mockk = "io.mockk:mockk:1.13.16"
 ##                   ^ "1.13.17"
 ##                   ^ "1.14.0"
 ##                   ^ "1.14.2"
+##                   ^ "1.14.3"
+##                   ^ "1.14.4"
+##                   ^ "1.14.5"
 
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
