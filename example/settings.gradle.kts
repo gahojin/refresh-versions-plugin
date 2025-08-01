@@ -13,12 +13,11 @@ plugins {
 dependencyResolutionManagement {
     repositories {
         google {
-// can be used with gradle 8.1 or later
-//            content {
-//                includeGroupAndSubgroups("com.android")
-//                includeGroupAndSubgroups("com.google")
-//                includeGroupAndSubgroups("androidx")
-//            }
+            content {
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
+                includeGroupAndSubgroups("androidx")
+            }
         }
         mavenCentral()
         mavenLocal()
