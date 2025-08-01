@@ -10,7 +10,7 @@
     "lefthook": "1.12.2",
     "npm-check-updates": "18.0.2"
   },
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@10.14.0",
   "engines": {
     "node": ">=20.x",
     "npm": "use pnpm",
