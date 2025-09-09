@@ -8,7 +8,8 @@ updates:
           - "*"
     schedule:
       interval: "daily"
-
+    cooldown:
+      default-days: 7
   - package-ecosystem: "npm"
     directory: "/"
     groups:
@@ -16,8 +17,9 @@ updates:
         patterns:
           - "*"
     schedule:
-      interval: "weekly"
-
+      interval: "daily"
+    cooldown:
+      default-days: 7
   - package-ecosystem: "gradle"
     directory: "/plugin-build"
     groups:
@@ -34,4 +36,6 @@ updates:
       # DokkaとJacksonの依存関係から、2.15.3よりバージョンを上げなし
       - dependency-name: "com.fasterxml.jackson.core:jackson-*"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+    cooldown:
+      default-days: 7
