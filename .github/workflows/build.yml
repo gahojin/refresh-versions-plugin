@@ -6,33 +6,33 @@ on:
     branches: ["main"]
     paths-ignore:
       - ".github/**"
-      - ".husky/**"
       - ".idea/**"
       - ".vscode/**"
       - "doc/**"
-      - ".commitlintrc.yml"
       - ".npmignore"
       - "COPYING"
       - "LICENSE"
       - "*.md"
       - "bumpver.toml"
+      - "commitlint.config.js"
       - "package.json"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
   pull_request:
     paths-ignore:
       - ".github/**"
-      - ".husky/**"
       - ".idea/**"
       - ".vscode/**"
       - "doc/**"
-      - ".commitlintrc.yml"
       - ".npmignore"
       - "COPYING"
       - "LICENSE"
       - "*.md"
       - "bumpver.toml"
+      - "commitlint.config.js"
       - "package.json"
       - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
 
 permissions:
   contents: write
