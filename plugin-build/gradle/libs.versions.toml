@@ -20,7 +20,7 @@ kover = "0.9.2"
 
 maven-publish = "0.34.0"
 
-mockk = "1.14.5"
+mockk = "1.14.6"
 
 okhttp = "5.1.0"
 
