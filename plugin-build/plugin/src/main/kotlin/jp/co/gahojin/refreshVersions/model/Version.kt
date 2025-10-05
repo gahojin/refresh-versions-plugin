@@ -298,7 +298,7 @@ internal sealed interface Item : Comparable<Item?> {
                 Character.isDigit(value[it])
             } ?: 0
 
-            stringPart = StringItem.withFollowByDigit(value.substring(0, index))
+            stringPart = StringItem.withFollowByDigit(value.take(index))
             digitPart = Version.parseItem(isCombination = false, isDigit = true, buf = value.substring(index))
         }
 

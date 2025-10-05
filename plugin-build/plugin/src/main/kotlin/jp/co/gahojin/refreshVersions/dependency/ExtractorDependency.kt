@@ -25,7 +25,7 @@ class ExtractorDependency {
                 appendLine("extracting dependencies")
                 appendLine("repositories:")
                 rootProject.allprojects {
-                    append("  ").append(it.displayName).append(" > ").appendLine(it.repositoriesWithGlobal.joinToString(", ") { it.name })
+                    append("  ").append(it.displayName).append(" > ").appendLine(it.repositoriesWithGlobal.joinToString(", ") { r -> r.name })
                 }
                 appendLine()
             }
@@ -80,7 +80,7 @@ class ExtractorDependency {
         configurations
             .asSequence()
             .flatMap { it.resolutionStrategy.forcedModules.asSequence() }
-            .mapNotNull { Dependency.from(it) }
+            .map { Dependency.from(it) }
             // リポジトリの制約を適用する
             .resolutionRepositories(destination, repositories)
     }
