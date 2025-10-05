@@ -26,15 +26,6 @@ updates:
       all:
         patterns:
           - "*"
-    ignore:
-      # 古いGradleをサポートするため、kotlin関連のアップデートを行わない
-      - dependency-name: "org.jetbrains.kotlin.*"
-      - dependency-name: "org.jetbrains.kotlin:kotlin-*"
-      - dependency-name: "org.jetbrains.kotlinx:kotlinx-coroutines-*"
-      # Kotlinアップデート出来ないため、古いKotlinをサポートしないOkHttpバージョンにはアップデートしない
-      - dependency-name: "com.squareup.okhttp3:*"
-      # DokkaとJacksonの依存関係から、2.15.3よりバージョンを上げなし
-      - dependency-name: "com.fasterxml.jackson.core:jackson-*"
     schedule:
       interval: "daily"
     cooldown:
