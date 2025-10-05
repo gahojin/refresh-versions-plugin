@@ -7,14 +7,3 @@ plugins {
     alias(libs.plugins.kotlinx.kover) apply false
     alias(libs.plugins.maven.publish) apply false
 }
-
-// FIXME Dokkaにより、脆弱な依存関係が取り込まれている
-// https://github.com/Kotlin/dokka/issues/3194
-allprojects {
-    configurations.all {
-        resolutionStrategy {
-            force(libs.fastxml.jackson.core)
-            force(libs.fastxml.woodstox)
-        }
-    }
-}
