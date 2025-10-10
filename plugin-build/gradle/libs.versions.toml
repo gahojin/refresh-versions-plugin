@@ -18,9 +18,9 @@ maven-publish = "0.34.0"
 
 mockk = "1.14.6"
 
-okhttp = "5.2.0"
+okhttp = "5.2.1"
 
-okio = "3.16.0"
+okio = "3.16.1"
 
 [libraries]
 
