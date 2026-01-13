@@ -163,7 +163,7 @@ internal object CodeParser {
             }
         }
         if (state.isCode) {
-            val range = startCodeIndex..<index
+            val range = startCodeIndex.rangeUntil(index)
             emit(Result(code, state, range))
         }
     }
