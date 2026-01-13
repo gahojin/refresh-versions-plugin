@@ -1,7 +1,7 @@
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.DetektCreateBaselineTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
@@ -28,8 +28,6 @@ dependencies {
     implementation(libs.okhttp.coroutines)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.okio)
-
-    detektPlugins(libs.detekt.formatting)
 
     testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutines.test)
@@ -67,10 +65,9 @@ tasks.withType<Detekt>().configureEach {
     jvmTarget = Build.jvmTarget.toString()
     reports {
         html.required = false
-        xml.required = false
-        txt.required = false
+        checkstyle.required = false
         sarif.required = true
-        md.required = true
+        markdown.required = true
     }
     exclude("build/")
     exclude("resources/")
