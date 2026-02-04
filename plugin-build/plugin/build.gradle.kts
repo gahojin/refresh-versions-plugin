@@ -1,5 +1,6 @@
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.DetektCreateBaselineTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -107,7 +108,7 @@ gradlePlugin {
 mavenPublishing {
     configure(GradlePlugin(
         javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationJavadoc"),
-        sourcesJar = true,
+        sourcesJar = SourcesJar.Sources(),
     ))
 
     publishToMavenCentral()
