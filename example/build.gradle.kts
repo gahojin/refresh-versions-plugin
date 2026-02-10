@@ -21,6 +21,7 @@ dependencies {
 // resolutionStrategyを認識出来ていうるか
 configurations.all {
     resolutionStrategy {
+        force(libs.fastxml.jackson)
         force(libs.fastxml.woodstox)
     }
 }
