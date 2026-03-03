@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 //    includeBuild("../plugin-build")
 }

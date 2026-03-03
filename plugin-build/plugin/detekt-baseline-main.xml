@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>AbstractClassCanBeConcreteClass:CorePlugin.kt:CorePlugin$CorePlugin</ID>
+    <ID>AbstractClassCanBeConcreteClass:RefreshVersionsExtension.kt:RefreshVersionsExtension$RefreshVersionsExtension</ID>
+    <ID>CyclomaticComplexMethod:CodeParser.kt:CodeParser$fun parse</ID>
+    <ID>CyclomaticComplexMethod:Version.kt:Item.ListItem$override fun compareTo: Int</ID>
+    <ID>CyclomaticComplexMethod:Version.kt:Version.Companion$private fun parseVersion: ListItem</ID>
+    <ID>LongMethod:CodeParser.kt:CodeParser$fun parse</ID>
+    <ID>LongMethod:Version.kt:Version.Companion$private fun parseVersion: ListItem</ID>
+    <ID>LoopWithTooManyJumpStatements:CodeParser.kt:CodeParser$while</ID>
+    <ID>NestedBlockDepth:Version.kt:Item.ListItem$fun normalize</ID>
+    <ID>NestedBlockDepth:Version.kt:Version.Companion$private fun parseVersion: ListItem</ID>
+    <ID>NoNameShadowing:CorePlugin.kt:CorePlugin${ RefreshVersionsTask.register(it, extensions) RefreshVersionsCleanupTask.register(it, extensions) }</ID>
+    <ID>NoNameShadowing:ExtractorDependency.kt:ExtractorDependency$repositories</ID>
+    <ID>ReturnCount:CodeParser.kt:CodeParser.State.Code$override suspend fun nextState: Int</ID>
+    <ID>ReturnCount:CodeParser.kt:CodeParser.State.InComment$override suspend fun nextState: Int</ID>
+  </CurrentIssues>
+</SmellBaseline>
