@@ -64,9 +64,9 @@ sealed class MavenDependencyVersionsFetcher : DependencyVersionsFetcher {
 
         override suspend fun fetchXmlMetadata() = runCatching {
             // メタデータのXMLファイルを抽出
-            targetDir.walkTopDown()
-                .filter { it.name.startsWith("maven-metadata") && it.name.endsWith(".xml") }
-                .singleOrNull()?.readText()
+            targetDir.walkTopDown().singleOrNull {
+                it.name.startsWith("maven-metadata") && it.name.endsWith(".xml")
+            }?.readText()
         }
     }
 }

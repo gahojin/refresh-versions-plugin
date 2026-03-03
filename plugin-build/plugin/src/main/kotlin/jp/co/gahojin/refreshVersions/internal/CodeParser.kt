@@ -18,22 +18,22 @@ internal object CodeParser {
     suspend fun parse(reader: Reader, visitor: Visitor) {
         var inIdMethod = false
 
-        parse(reader).collect {
-            if (it.isIdMethod) {
+        parse(reader).collect { result ->
+            if (result.isIdMethod) {
                 inIdMethod = true
-                visitor.visitPlugin(it)
+                visitor.visitPlugin(result)
                 return@collect
             }
             if (inIdMethod) {
-                when (it.state) {
+                when (result.state) {
                     is State.OneLineComment -> {
-                        if (addCommentRegex.containsMatchIn(it.trimText)) {
-                            visitor.visitComment(it)
+                        if (addCommentRegex.containsMatchIn(result.trimText)) {
+                            visitor.visitComment(result)
                             return@collect
                         }
                     }
                     is State.General -> {
-                        if (it.trimText.isNotEmpty()) {
+                        if (result.trimText.isNotEmpty()) {
                             inIdMethod = false
                         }
                     }
@@ -42,7 +42,7 @@ internal object CodeParser {
                     }
                 }
             }
-            visitor.visitOther(it)
+            visitor.visitOther(result)
         }
     }
 
@@ -60,65 +60,64 @@ internal object CodeParser {
 
         parseInternal(reader.readText())
             // 改行や3重クオートは処理しない
-            .collect {
-                when (val state = it.state) {
+            .collect { result ->
+                when (val state = result.state) {
                     is State.BlockCode -> {
                         if (inPlugins) {
                             inPlugins = false
                             emitIdData()
-                        } else if (pluginsBlockRegex.matches(it.trimText)) {
+                        } else if (pluginsBlockRegex.matches(result.trimText)) {
                             inPlugins = true
                         }
-                        emit(it)
+                        emit(result)
                     }
                     is State.General -> {
-                        val isContainNewLine = it.isContainNewLine
-                        val endInclusive = if (isContainNewLine) it.range.last - 1 else it.range.last
+                        val isContainNewLine = result.isContainNewLine
+                        val endInclusive = if (isContainNewLine) result.range.last - 1 else result.range.last
                         idData?.updateRange(endInclusive)?.also {
                             if (isContainNewLine) {
                                 emitIdData()
                             }
                         } ?: run {
-                            emit(it)
+                            emit(result)
                         }
                     }
                     is State.OneLineComment -> {
-                        val endInclusive = if (it.isContainNewLine) it.range.last - 1 else it.range.last
+                        val endInclusive = if (result.isContainNewLine) result.range.last - 1 else result.range.last
                         idData?.updateRange(endInclusive)?.also {
                             emitIdData()
                         } ?: run {
-                            emit(it)
+                            emit(result)
                         }
                     }
                     is State.InComment -> {
                         if (state.isMultiLine) {
                             emitIdData()
                         }
-                        idData?.updateRange(it.range.last) ?: run {
-                            emit(it)
+                        idData?.updateRange(result.range.last) ?: run {
+                            emit(result)
                         }
                     }
                     is State.InStringSingleQuote, is State.InStringDoubleQuote -> {
-                        idData?.updateRange(it.range.last) ?: run {
-                            emit(it)
+                        idData?.updateRange(result.range.last) ?: run {
+                            emit(result)
                         }
                     }
                     is State.MethodCallCode -> {
-                        if (idMethodRegex.matches(it.trimText)) {
+                        if (idMethodRegex.matches(result.trimText)) {
                             idData?.also { prev ->
-                                prev.updateRange(it.range.first)
+                                prev.updateRange(result.range.first)
                                 emit(prev)
                             }
-                            idData = it.also {
-                                it.isIdMethod = true
-                            }
+                            result.isIdMethod = true
+                            idData = result
                         } else {
                             idData ?: run {
-                                emit(it)
+                                emit(result)
                             }
                         }
                     }
-                    else -> emit(it)
+                    else -> emit(result)
                 }
             }
     }

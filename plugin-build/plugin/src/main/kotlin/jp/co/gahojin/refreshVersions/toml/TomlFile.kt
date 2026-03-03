@@ -6,16 +6,17 @@ package jp.co.gahojin.refreshVersions.toml
 import jp.co.gahojin.refreshVersions.Constants
 import java.io.Reader
 
-data class TomlFile(
-    val sections: MutableMap<TomlSection, List<TomlLine>>,
+class TomlFile(
+    sections: Map<TomlSection, List<TomlLine>>,
 ) {
+    private val sections = sections.toMutableMap()
     val isEmpty: Boolean
         get() = sections.size <= 1 && sections[TomlSection.Root]?.isEmpty() ?: true
 
     override fun toString() = format(false)
 
     internal operator fun get(section: TomlSection): List<TomlLine> {
-        return sections[section] ?: emptyList()
+        return sections[section].orEmpty()
     }
 
     internal operator fun set(section: TomlSection, lines: List<TomlLine>) {
@@ -77,23 +78,23 @@ data class TomlFile(
     companion object {
         @JvmStatic
         fun parseToml(reader: Reader): TomlFile {
-            val result = linkedMapOf<TomlSection, List<TomlLine>>()
+            val result = linkedMapOf<TomlSection, MutableList<TomlLine>>()
             var section: TomlSection = TomlSection.Root
-            var current = mutableListOf<TomlLine>()
-            result[section] = current
+            result[section] = mutableListOf()
 
             reader.forEachLine { line ->
                 val trimmedLine = line.trim()
                 if (trimmedLine.startsWith("[") && trimmedLine.endsWith("]")) {
                     // in Section
                     section = TomlSection.from(trimmedLine.trim('[', ']'))
-                    current = mutableListOf()
-                    result[section] = current
+                    if (!result.containsKey(section)) {
+                        result[section] = mutableListOf()
+                    }
                 } else {
-                    current.add(TomlLine(section, trimmedLine))
+                    result[section]?.add(TomlLine(section, trimmedLine))
                 }
             }
-            return TomlFile(result)
+            return TomlFile(result.mapValues { it.value.toList() })
         }
     }
 }
