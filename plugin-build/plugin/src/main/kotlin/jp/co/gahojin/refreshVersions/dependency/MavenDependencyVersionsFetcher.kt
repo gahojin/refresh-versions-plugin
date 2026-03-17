@@ -34,8 +34,12 @@ sealed class MavenDependencyVersionsFetcher : DependencyVersionsFetcher {
     ) : MavenDependencyVersionsFetcher() {
         private val metadataUrl = "${repositoryUrl.removeSuffix("/")}/${moduleId.group.replace('.', '/')}/${moduleId.name}/maven-metadata.xml"
         private val request = Request.Builder().apply {
-            // 一定期間キャッシュする
-            cacheControl(CacheControl.Builder().maxStale(cacheDuration).build())
+            // キャッシュ期間を制限する
+            cacheControl(if (cacheDuration == Duration.ZERO) {
+                CacheControl.FORCE_NETWORK
+            } else {
+                CacheControl.Builder().maxStale(cacheDuration).build()
+            })
             url(metadataUrl)
             authorization?.also { header("Authorization", it) }
         }.build()

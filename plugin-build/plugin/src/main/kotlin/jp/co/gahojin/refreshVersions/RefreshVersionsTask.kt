@@ -17,16 +17,17 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import java.io.File
+import kotlin.time.Duration.Companion.minutes
 
-@CacheableTask
+@DisableCachingByDefault
 abstract class RefreshVersionsTask : DefaultTask() {
     init {
         group = Constants.GROUP
@@ -101,7 +102,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
             val lookupVersionsCandidates = LookupVersionsCandidates(
-                cacheDurationMinutes = cacheDurationMinutes.get(),
+                cacheDuration = cacheDurationMinutes.get().minutes,
                 logger = logger,
             )
             val libraryUpdatableDependencies = lookupVersionsCandidates.execute(libraryDependencies)
