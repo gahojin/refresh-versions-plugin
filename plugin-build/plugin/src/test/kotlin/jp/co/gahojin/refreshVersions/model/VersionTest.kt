@@ -40,7 +40,6 @@ private val versions = listOf(
 
 class VersionTest : StringSpec({
     "ソート順が想定通りであること" {
-        println(versions.sorted())
         versions shouldBeSortedWith(VersionComparator)
     }
 

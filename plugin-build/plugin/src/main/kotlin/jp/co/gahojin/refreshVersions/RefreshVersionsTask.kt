@@ -25,6 +25,7 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 import java.io.File
+import kotlin.time.Duration.Companion.minutes
 
 @DisableCachingByDefault
 abstract class RefreshVersionsTask : DefaultTask() {
@@ -101,7 +102,7 @@ abstract class RefreshVersionsTask : DefaultTask() {
 
             // ライブラリとプラグインの最新のバージョン情報をダウンロード
             val lookupVersionsCandidates = LookupVersionsCandidates(
-                cacheDurationMinutes = cacheDurationMinutes.get(),
+                cacheDuration = cacheDurationMinutes.get().minutes,
                 logger = logger,
             )
             val libraryUpdatableDependencies = lookupVersionsCandidates.execute(libraryDependencies)
