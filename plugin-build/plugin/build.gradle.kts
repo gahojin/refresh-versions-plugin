@@ -90,11 +90,6 @@ tasks.withType<Test>().configureEach {
     jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
-signing {
-    useGpgCmd()
-    sign(publishing.publications)
-}
-
 gradlePlugin {
     plugins {
         create(Maven.PLUGIN_ID) {
@@ -112,6 +107,7 @@ mavenPublishing {
     ))
 
     publishToMavenCentral()
+    signAllPublications()
 
     coordinates(Maven.PLUGIN_ID, Maven.ARTIFACT_ID, Maven.VERSION)
 
