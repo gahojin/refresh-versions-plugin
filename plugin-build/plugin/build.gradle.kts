@@ -21,16 +21,12 @@ group = Maven.PLUGIN_ID
 version = Maven.VERSION
 
 dependencies {
-    implementation(platform(libs.kotlin.bom))
-    implementation(libs.kotlin.stdlib)
-    implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.coroutines)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.okio)
 
-    testImplementation(platform(libs.kotlinx.coroutines.bom))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(platform(libs.kotest.bom))
     testImplementation(libs.kotest.runner.junit5)
