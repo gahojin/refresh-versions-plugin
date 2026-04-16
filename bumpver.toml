@@ -11,15 +11,12 @@ tag = true
 push = false
 
 [bumpver.file_patterns]
-"plugin-build/buildSrc/src/main/java/Maven.kt" = [
-    'const val VERSION = "{pep440_version}"',
+"plugin-build/plugin/build.gradle.kts" = [
+    'version = "{pep440_version}"',
 ]
 "README.md" = [
     'id("jp.co.gahojin.refreshVersions") version "{pep440_version}"'
 ]
 "example/settings.gradle.kts" = [
     'id("jp.co.gahojin.refreshVersions") version "{pep440_version}"'
-]
-"bumpver.toml" = [
-    'current_version = "{version}"',
 ]

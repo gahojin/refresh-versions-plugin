@@ -17,8 +17,8 @@ plugins {
     id("signing")
 }
 
-group = Maven.PLUGIN_ID
-version = Maven.VERSION
+group = "jp.co.gahojin.refreshVersions"
+version = "0.9.0"
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
@@ -45,21 +45,22 @@ detekt {
 
 java {
     toolchain {
-        sourceCompatibility = Build.jvmTarget
-        targetCompatibility = Build.jvmTarget
+        val javaVersion = JavaVersion.toVersion(libs.versions.java.get())
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
 }
 
 kotlin {
     compilerOptions {
         javaParameters = true
-        jvmTarget = JvmTarget.fromTarget(Build.jvmTarget.toString())
+        jvmTarget = JvmTarget.fromTarget(libs.versions.java.get())
         apiVersion = KotlinVersion.KOTLIN_2_0
     }
 }
 
 tasks.withType<Detekt>().configureEach {
-    jvmTarget = Build.jvmTarget.toString()
+    jvmTarget = libs.versions.java.get()
     reports {
         html.required = false
         checkstyle.required = false
@@ -71,7 +72,7 @@ tasks.withType<Detekt>().configureEach {
 }
 
 tasks.withType<DetektCreateBaselineTask>().configureEach {
-    jvmTarget = Build.jvmTarget.toString()
+    jvmTarget = libs.versions.java.get()
     exclude("build/")
     exclude("resources/")
 }
@@ -88,10 +89,10 @@ tasks.withType<Test>().configureEach {
 
 gradlePlugin {
     plugins {
-        create(Maven.PLUGIN_ID) {
-            id = Maven.PLUGIN_ID
-            implementationClass = Maven.IMPLEMENTATION_CLASS
-            version = Maven.VERSION
+        create(group.toString()) {
+            id = group.toString()
+            implementationClass = "jp.co.gahojin.refreshVersions.CorePlugin"
+            version = version.toString()
         }
     }
 }
@@ -105,30 +106,30 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates(Maven.PLUGIN_ID, Maven.ARTIFACT_ID, Maven.VERSION)
+    coordinates(group.toString(), "${group}.gradle.plugin", version.toString())
 
     pom {
-        name = Maven.ARTIFACT_ID
-        description = Maven.DESCRIPTION
-        url = "https://github.com/${Maven.GITHUB_REPOSITORY}/"
+        name = "${group}.gradle.plugin"
+        description = "Refresh Versions Plugin"
+        url = "https://github.com/gahojin/refresh-versions-plugin/"
         licenses {
             license {
-                name = Maven.LICENSE_NAME
-                url = Maven.LICENSE_URL
-                distribution = Maven.LICENSE_DIST
+                name = "Apache-2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "repo"
             }
         }
         developers {
             developer {
-                id = Maven.DEVELOPER_ID
-                name = Maven.DEVELOPER_NAME
-                url = Maven.DEVELOPER_URL
+                id = "gahojin"
+                name = "GAHOJIN, Inc."
+                url = "https://github.com/gahojin/"
             }
         }
         scm {
-            url = "https://github.com/${Maven.GITHUB_REPOSITORY}/"
-            connection = "scm:git:git://github.com/${Maven.GITHUB_REPOSITORY}.git"
-            developerConnection = "scm:git:ssh://git@github.com/${Maven.GITHUB_REPOSITORY}.git"
+            url = "https://github.com/refresh-versions-plugin/"
+            connection = "scm:git:git://github.com/refresh-versions-plugin.git"
+            developerConnection = "scm:git:ssh://git@github.com/refresh-versions-plugin.git"
         }
     }
 }

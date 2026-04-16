@@ -2,6 +2,8 @@
 
 [versions]
 
+java = "1.8"
+
 detekt = "2.0.0-alpha.2"
 
 dokka = "2.2.0"
