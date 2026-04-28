@@ -4,13 +4,13 @@
 
 java = "1.8"
 
-detekt = "2.0.0-alpha.2"
+detekt = "2.0.0-alpha.3"
 
 dokka = "2.2.0"
 
 kotest = "6.1.11"
 
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 
 kotlinx-coroutines = "1.10.2"
 
