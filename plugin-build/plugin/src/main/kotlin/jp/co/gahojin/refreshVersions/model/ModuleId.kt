@@ -14,7 +14,7 @@ data class ModuleId(
 ) : ModuleIdentifier, Comparable<ModuleId> {
     override fun compareTo(other: ModuleId): Int {
         var ret = group.compareTo(other.group)
-        if (ret != 0) {
+        if (ret == 0) {
             ret = name.compareTo(other.name)
         }
         return ret
