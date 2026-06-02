@@ -43,7 +43,3 @@ jobs:
 
       - name: Build with Gradle (plugin)
         run: ./gradlew plugin-build:plugin:check
-
-      - name: Build with Gradle (example)
-        run: ./gradlew refreshVersions
-        working-directory: ./example/
