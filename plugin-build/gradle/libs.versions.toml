@@ -4,23 +4,23 @@
 
 java = "1.8"
 
-detekt = "2.0.0-alpha.3"
+detekt = "2.0.0-alpha.5"
 
 dokka = "2.2.0"
 
-kotest = "6.1.11"
+kotest = "6.2.1"
 
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 
 kotlinx-coroutines = "1.11.0"
 
 kover = "0.9.8"
 
-maven-publish = "0.36.0"
+maven-publish = "0.37.0"
 
 mockk = "1.14.11"
 
-okhttp = "5.3.2"
+okhttp = "5.4.0"
 
 okio = "3.17.0"
 
