@@ -27,6 +27,15 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Verify tag matches project version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          FILE_VERSION=$(grep -m1 '^version = ' plugin-build/plugin/build.gradle.kts | sed -E 's/version = "(.*)"/\1/')
+          if [ "$TAG_VERSION" != "$FILE_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match build.gradle.kts version ($FILE_VERSION)"
+            exit 1
+          fi
+
       - name: Setup JDK ${{ matrix.java-version }}
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
