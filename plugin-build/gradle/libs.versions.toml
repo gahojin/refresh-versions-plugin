@@ -4,11 +4,11 @@
 
 java = "1.8"
 
-detekt = "2.0.0-alpha.5"
+detekt = "2.0.0-alpha.6"
 
 dokka = "2.2.0"
 
-kotest = "6.2.3"
+kotest = "6.2.4"
 
 kotlin = "2.4.10"
 
@@ -20,7 +20,7 @@ maven-publish = "0.37.0"
 
 mockk = "1.14.11"
 
-okhttp = "5.4.0"
+okhttp = "5.5.0"
 
 okio = "3.18.1"
 
