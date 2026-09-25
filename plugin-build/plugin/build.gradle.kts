@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "jp.co.gahojin.refreshVersions"
-version = "0.9.1"
+version = "0.10.0"
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
