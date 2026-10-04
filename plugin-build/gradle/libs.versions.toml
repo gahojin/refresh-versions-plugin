@@ -14,7 +14,7 @@ kotlin = "2.4.20"
 
 kotlinx-coroutines = "1.11.0"
 
-kover = "0.9.9"
+kover = "0.9.10"
 
 maven-publish = "0.37.0"
 
