@@ -8,19 +8,19 @@ detekt = "2.0.0-alpha.6"
 
 dokka = "2.3.0-Beta"
 
-kotest = "6.2.5"
+kotest = "6.2.6"
 
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 
 kotlinx-coroutines = "1.11.0"
 
-kover = "0.9.10"
+kover = "0.9.11"
 
 maven-publish = "0.37.0"
 
 mockk = "1.14.11"
 
-okhttp = "5.5.0"
+okhttp = "5.5.1"
 
 okio = "3.18.2"
 
